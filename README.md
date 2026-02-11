@@ -768,5 +768,3 @@ Every interaction is delightful:
 **Design System**: Modern, Dark, Gradient-heavy, Animated
 **Architecture**: Modular, Component-based, Self-configuring
 **Philosophy**: Beautiful, Functional, Maintainable
-
-Built with ❤️ for Skillsync AI
