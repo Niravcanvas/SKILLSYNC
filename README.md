@@ -303,8 +303,6 @@ For support, please visit the [About Us](about.php) page or contact the developm
 
 ---
 
-**Made with ❤️ by the Skillsync Team**
-
 ---
 
 ## 📚 Additional Resources
