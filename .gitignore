@@ -1,0 +1,31 @@
+# Dependencies
+/vendor/
+
+# Environment
+.env
+app/config/.env
+
+# Logs
+storage/logs/*.log
+!storage/logs/.gitkeep
+
+# Uploads
+storage/uploads/*
+!storage/uploads/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Composer
+composer.phar
+
+# Test files
+test_sdk.php
+composer-setup.php
