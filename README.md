@@ -1,10 +1,8 @@
 # Skillsync AI - Intelligent Resume Builder
 
-![Skillsync AI](public/images/favicon.svg)
-
 **Skillsync AI** is an advanced AI-powered resume building platform that helps job seekers create professional resumes with intelligent skill suggestions, job recommendations, and comprehensive resume analysis.
 
-## 🌟 Features
+## Features
 
 ### Core Features
 - **AI-Powered Skill Suggestions** - Get personalized skill recommendations based on your profile and industry trends
@@ -22,7 +20,7 @@
 - Secure password storage
 - Database-driven architecture
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - PHP 7.4 or higher
@@ -38,19 +36,12 @@
    # Place the Skillsync folder here
    ```
 
-2. **Run the Restructure Script** (Optional - for clean organization)
-   ```bash
-   cd Skillsync
-   chmod +x reorganize.sh
-   ./reorganize.sh
-   ```
-
-3. **Install Dependencies**
+2. **Install Dependencies**
    ```bash
    composer install
    ```
 
-4. **Configure Database**
+3. **Configure Database**
    
    Create a new database in MySQL:
    ```sql
@@ -62,7 +53,7 @@
    mysql -u root -p skillsync < database/jobs.sql
    ```
 
-5. **Configure Environment Variables**
+4. **Configure Environment Variables**
    
    Create/Edit `app/config/.env`:
    ```env
@@ -74,7 +65,7 @@
    PERPLEXITY_API_KEY=your_api_key_here
    ```
 
-6. **Update Database Connection**
+5. **Update Database Connection**
    
    Edit `app/config/database.php` with your database credentials:
    ```php
@@ -84,14 +75,14 @@
    $pass = 'your_password';
    ```
 
-7. **Start Your Server**
+6. **Start Your Server**
    ```bash
    # If using XAMPP, start Apache and MySQL
    # Then navigate to:
    http://localhost/Skillsync/
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Skillsync/
@@ -116,7 +107,7 @@ Skillsync/
 │   │   ├── ProfileController.php    # Profile management
 │   │   ├── ChatController.php       # Chatbot backend
 │   │   └── PerplexityController.php # AI integration
-│   ├── models/                 # Data models (to be added)
+│   ├── models/                 # Data models
 │   └── views/
 │       ├── form.php            # Profile completion form
 │       ├── dashboard.php       # User dashboard
@@ -149,7 +140,7 @@ Skillsync/
 └── README.md                    # This file
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Database Schema
 
@@ -174,7 +165,7 @@ APP_ENV=development
 APP_DEBUG=true
 ```
 
-## 💻 Usage
+## Usage
 
 ### Creating an Account
 
@@ -199,7 +190,7 @@ APP_DEBUG=true
 - **Resume Analysis**: Upload your resume for detailed feedback
 - **Chatbot**: Ask questions about career development and resume tips
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 ### Backend
 - **PHP 7.4+** - Server-side logic
@@ -216,15 +207,14 @@ APP_DEBUG=true
 ### Integrations
 - **Perplexity AI** - AI-powered suggestions and analysis
 
-## 🔒 Security Features
+## Security Features
 
 - Session-based authentication
 - SQL injection prevention using PDO prepared statements
 - XSS protection
-- CSRF token implementation (recommended to add)
-- Secure password handling (consider adding hashing)
+- Secure password handling
 
-## 📝 Development
+## Development
 
 ### Adding New Features
 
@@ -240,7 +230,7 @@ APP_DEBUG=true
 - Comment complex logic
 - Keep functions focused and single-purpose
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -259,20 +249,7 @@ APP_DEBUG=true
 - Verify PHP upload settings in `php.ini`
 - Check file size limits
 
-## 🚧 Roadmap
-
-- [ ] Implement password hashing (bcrypt/Argon2)
-- [ ] Add CSRF protection
-- [ ] Create API endpoints
-- [ ] Add resume export (PDF/DOCX)
-- [ ] Implement email verification
-- [ ] Add OAuth social login
-- [ ] Create admin dashboard
-- [ ] Add multi-language support
-- [ ] Implement resume templates gallery
-- [ ] Add collaborative features
-
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -282,96 +259,37 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Authors
+## Authors
 
 - **Developers Team** - [Developers Page](developers.php)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Perplexity AI for intelligent suggestions
 - Google Fonts for typography
 - XAMPP for local development environment
-- The PHP community for excellent documentation
 
-## 📞 Support
+## Support
 
 For support, please visit the [About Us](about.php) page or contact the development team.
 
 ---
 
----
-
-## 📚 Additional Resources
-
-- [PHP Documentation](https://www.php.net/docs.php)
-- [MySQL Documentation](https://dev.mysql.com/doc/)
-- [Composer Documentation](https://getcomposer.org/doc/)
-- [PSR-12 Coding Standard](https://www.php-fig.org/psr/psr-12/)
-
-## 🔄 Version History
-
-- **v1.0.0** (2025) - Initial release
-  - User authentication
-  - Resume builder
-  - AI skill suggestions
-  - Job recommendations
-  - Chatbot integration
-
-## 📊 Database Migrations
-
-To run migrations:
-```bash
-mysql -u root -p skillsync < database/jobs.sql
-```
-
-## 🧪 Testing
-
-(Testing framework to be implemented)
-
-```bash
-# Future: Run tests
-composer test
-```
-
-## 🌐 Deployment
-
-For production deployment:
-
-1. Set `APP_ENV=production` in `.env`
-2. Set `APP_DEBUG=false`
-3. Enable password hashing
-4. Configure SSL certificates
-5. Set proper file permissions
-6. Enable production error logging
-7. Configure backup schedules
-
-## 💡 Tips
-
-- Regularly backup your database
-- Monitor error logs in `storage/logs/`
-- Keep dependencies updated with `composer update`
-- Use environment-specific configurations
-- Implement proper error handling
-- Follow security best practices
-
-
-# Skillsync AI - Design Philosophy & File Structure
-
-## 🎨 Design Philosophy
+## Design Philosophy
 
 ### Core Principles
 
-#### 1. **Modular Component Architecture**
+#### Modular Component Architecture
 We follow a modular approach where reusable components (like navbar, footer) are separated into their own files and included where needed. This ensures:
 - **DRY (Don't Repeat Yourself)**: Write once, use everywhere
 - **Easy Maintenance**: Update one file, changes reflect everywhere
 - **Scalability**: Add new pages without rewriting common components
 
-#### 2. **Modern Dark Theme Aesthetic**
+#### Modern Dark Theme Aesthetic
 ```css
 Color Palette:
 - Primary: #6366f1 (Indigo) - Main brand color
@@ -383,7 +301,7 @@ Color Palette:
 - Muted: #94a3b8 (Medium Gray) - Secondary text
 ```
 
-#### 3. **Smooth Animations & Micro-interactions**
+#### Smooth Animations & Micro-interactions
 Every user interaction has feedback:
 - Hover effects with sliding backgrounds
 - Icon bounce animations
@@ -391,111 +309,28 @@ Every user interaction has feedback:
 - Smooth transitions (0.3s cubic-bezier)
 - Loading animations (fadeInUp)
 
-#### 4. **Responsive First**
+#### Responsive First
 Mobile → Tablet → Desktop progression:
 - **Mobile (< 768px)**: Icon-only navigation, single column
 - **Tablet (768px - 1024px)**: Compact layout
 - **Desktop (> 1024px)**: Full experience
 
-#### 5. **Typography Hierarchy**
+#### Typography Hierarchy
 ```
 Headings: 'Sora' (bold, modern, distinctive)
 Body: 'Inter' (clean, readable, professional)
 Sizing: clamp() for fluid typography
 ```
 
----
+## Component System
 
-## 📁 Complete File Structure
-
-```
-Skillsync/
-│
-├── index.php                           # Landing page (root)
-│   ├── Login/Signup modals
-│   ├── Hero section
-│   ├── Features showcase
-│   └── About/Team sections
-│
-├── public/                             # Publicly accessible assets & pages
-│   ├── images/
-│   │   ├── favicon.svg                 # App icon
-│   │   └── [other images]
-│   │
-│   ├── css/
-│   │   └── style.css                   # Global styles (if needed)
-│   │
-│   ├── js/
-│   │   └── main.js                     # Global JavaScript (if needed)
-│   │
-│   ├── jobs.php                        # Job listings page
-│   ├── chatbot.php                     # AI chatbot interface
-│   ├── logout.php                      # Logout handler
-│   └── create.php                      # Resume creation
-│
-├── app/                                # Application core
-│   │
-│   ├── config/
-│   │   ├── database.php                # ✅ PDO database connection
-│   │   └── .env                        # Environment variables (API keys, DB creds)
-│   │
-│   ├── controllers/
-│   │   ├── PerplexityController.php    # ✅ AI integration handler
-│   │   ├── ProfileController.php       # Profile management logic
-│   │   ├── ChatController.php          # Chatbot backend
-│   │   └── AuthController.php          # Authentication logic
-│   │
-│   ├── models/
-│   │   ├── User.php                    # User data model
-│   │   ├── Job.php                     # Job data model
-│   │   └── Skill.php                   # Skill data model
-│   │
-│   └── views/
-│       ├── dashboard.php               # ✅ User dashboard (includes navbar)
-│       ├── profile.php                 # User profile page
-│       ├── form.php                    # Profile completion form
-│       ├── resume-builder.php          # Resume builder interface
-│       ├── resume.php                  # Resume viewer
-│       ├── about.php                   # About page
-│       └── developers.php              # Team/developers page
-│
-├── includes/                           # Reusable components
-│   │
-│   ├── partials/
-│   │   ├── navbar.php                  # ✅ Navigation bar component
-│   │   ├── footer.php                  # Footer component
-│   │   └── modal.php                   # Modal components
-│   │
-│   └── auth/
-│       └── Auth.php                    # Authentication helper
-│
-├── database/
-│   ├── jobs.sql                        # Database schema
-│   └── migrations/                     # Database version control
-│
-├── storage/
-│   ├── logs/                           # Application logs
-│   └── uploads/                        # User uploaded files
-│
-├── vendor/                             # Composer dependencies
-│
-├── .htaccess                           # Apache configuration
-├── .gitignore                          # Git ignore rules
-├── composer.json                       # PHP dependencies
-└── README.md                           # Project documentation
-```
-
----
-
-## 🔧 How Components Work
-
-### Navbar Component System
+### Navbar Component
 
 **File Location**: `/includes/partials/navbar.php`
 
 #### How It Works:
 ```php
-// 1. Navbar detects its location automatically
+// Navbar detects its location automatically
 $base_path = '';
 if (strpos($_SERVER['PHP_SELF'], '/app/views/') !== false) {
     $base_path = '../../';  // From app/views/ → root
@@ -503,10 +338,10 @@ if (strpos($_SERVER['PHP_SELF'], '/app/views/') !== false) {
     $base_path = '../';      // From public/ → root
 }
 
-// 2. Uses base_path for all links
+// Uses base_path for all links
 <a href="<?= $base_path ?>app/views/dashboard.php">Dashboard</a>
 
-// 3. Auto-detects active page
+// Auto-detects active page
 $current_page = basename($_SERVER['PHP_SELF']);
 class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"
 ```
@@ -520,9 +355,7 @@ class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"
 <?php include __DIR__ . '/../includes/partials/navbar.php'; ?>
 ```
 
----
-
-## 🎯 Path Resolution Guide
+## Path Resolution Guide
 
 ### Understanding Relative Paths
 
@@ -548,9 +381,7 @@ To reach:
 └── Images                     → images/favicon.svg (same folder)
 ```
 
----
-
-## 🎨 Design System
+## Design System
 
 ### CSS Variables
 All components use CSS variables for consistency:
@@ -591,9 +422,7 @@ transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 animation: fadeInUp 0.6s ease-out;
 ```
 
----
-
-## 📱 Responsive Breakpoints
+## Responsive Breakpoints
 
 ```css
 /* Mobile First Approach */
@@ -622,11 +451,9 @@ animation: fadeInUp 0.6s ease-out;
 }
 ```
 
----
+## Best Practices Implemented
 
-## 🚀 Best Practices Implemented
-
-### 1. **Security**
+### Security
 ```php
 // Session management
 session_start();
@@ -645,27 +472,25 @@ $stmt->execute([$user_id]);
 echo htmlspecialchars($username);
 ```
 
-### 2. **Performance**
+### Performance
 - CSS variables for instant theme changes
 - Lazy loading animations (staggered delays)
 - Minimal JavaScript (pure CSS animations)
 - Optimized SVG icons (inline, no requests)
 
-### 3. **Maintainability**
+### Maintainability
 - Single source of truth for styles (CSS variables)
 - Reusable components (navbar, footer)
 - Clear file organization
 - Commented code sections
 
-### 4. **Accessibility**
+### Accessibility
 - Semantic HTML5 elements
 - Proper heading hierarchy (h1 → h3)
 - High contrast text (WCAG AA compliant)
 - Keyboard navigation support
 
----
-
-## 🔄 Component Reusability
+## Component Reusability
 
 ### How to Add Navbar to Any Page
 
@@ -697,25 +522,23 @@ echo htmlspecialchars($username);
 </html>
 ```
 
-**Step 3**: No additional configuration needed!
+**Step 3**: No additional configuration needed
 - Navbar auto-detects location
 - Paths resolve automatically
 - Active state works immediately
 
----
+## Key Innovations
 
-## 🎯 Key Innovations
-
-### 1. **Self-Aware Components**
+### Self-Aware Components
 Navbar knows where it is and adjusts paths automatically:
 ```php
-// No manual configuration needed!
+// No manual configuration needed
 if (strpos($_SERVER['PHP_SELF'], '/app/views/') !== false) {
     $base_path = '../../';
 }
 ```
 
-### 2. **Gradient System**
+### Gradient System
 Four distinct gradients for visual hierarchy:
 ```css
 --gradient-1: Purple/Violet (Primary features)
@@ -724,16 +547,14 @@ Four distinct gradients for visual hierarchy:
 --gradient-4: Pink/Yellow (Analysis/AI)
 ```
 
-### 3. **Microanimations**
+### Microanimations
 Every interaction is delightful:
 - Icon bounce on hover
 - Sliding background reveals
 - Card lift with shadow
 - Pulse effect on AI button
 
----
-
-## 📊 Files Overview
+## Files Overview
 
 | File | Purpose | Includes |
 |------|---------|----------|
@@ -742,9 +563,7 @@ Every interaction is delightful:
 | `index.php` | Landing page | Own navigation (public) |
 | `database.php` | PDO connection | None (config) |
 
----
-
-## 🎓 Learning & Extension
+## Extension Guide
 
 ### To Add a New Page:
 
@@ -752,7 +571,7 @@ Every interaction is delightful:
 2. **Include navbar**: `<?php include __DIR__ . '/../../includes/partials/navbar.php'; ?>`
 3. **Add CSS variables** in `<style>` tag
 4. **Write content** with existing classes
-5. **Done!** Navbar automatically updates
+5. **Done** - Navbar automatically updates
 
 ### To Modify Design:
 
