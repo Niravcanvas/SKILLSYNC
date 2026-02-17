@@ -1,587 +1,525 @@
-# Skillsync AI - Intelligent Resume Builder
+# Skillsync AI — Intelligent Career Platform
 
-**Skillsync AI** is an advanced AI-powered resume building platform that helps job seekers create professional resumes with intelligent skill suggestions, job recommendations, and comprehensive resume analysis.
+<div align="center">
+
+![Skillsync AI](https://img.shields.io/badge/Skillsync-AI-6366f1?style=for-the-badge&logo=sparkles)
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql)
+![Groq AI](https://img.shields.io/badge/Groq-AI-F55036?style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
+
+**An AI-powered career platform that helps job seekers build resumes, track applications, generate cover letters, and close skill gaps — all in one place.**
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start (Local / XAMPP)](#quick-start-local--xampp)
+- [Docker Deployment](#docker-deployment)
+- [Environment Variables](#environment-variables)
+- [Database Schema](#database-schema)
+- [AI Integration](#ai-integration)
+- [Design System](#design-system)
+- [File Placement Guide](#file-placement-guide)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+
+---
+
+## Overview
+
+Skillsync AI is a full-stack PHP web application that combines a traditional resume-building workflow with modern AI capabilities powered by [Groq](https://console.groq.com/). Users sign up, complete their career profile, and gain access to a suite of tools designed to accelerate their job search.
+
+---
 
 ## Features
 
-### Core Features
-- **AI-Powered Skill Suggestions** - Get personalized skill recommendations based on your profile and industry trends
-- **Smart Resume Builder** - Create professional resumes with multiple templates
-- **Resume Analysis** - Receive actionable insights to improve your resume
-- **Job & Internship Recommendations** - Discover curated opportunities matching your profile
-- **AI Chatbot Assistant** - Get career advice and resume help through intelligent conversation
-- **User Profiles** - Manage your professional information and track your progress
+### Core Pages
+| Page | Path | Description |
+|------|------|-------------|
+| Landing | `/index.php` | Public homepage with login / signup modals |
+| Dashboard | `/app/views/dashboard.php` | User home with profile summary and quick stats |
+| Profile | `/app/views/profile.php` | Manage education, experience, skills, certifications, projects |
+| Resume Builder | `/app/views/resume-builder.php` | Build a printable resume with AI-generated career objective |
+| Resume Preview | `/app/views/resume.php` | View and download the generated resume |
+| Jobs | `/public/jobs.php` | Browse and post job listings |
+| AI Assistant | `/public/chatbot.php` | Conversational AI chatbot with full user context |
+| Applications Tracker | `/app/views/applications.php` | Track job applications by status |
+| Cover Letter Generator | `/app/views/cover-letter.php` | AI-generated tailored cover letters |
+| Skill Gap Analysis | `/app/views/skill-gap.php` | Compare your skills against a job description |
+| Profile Form | `/app/views/form.php` | Onboarding form after signup |
 
-### Technical Features
-- User authentication and session management
-- Profile completion workflow
-- Integration with Perplexity AI for intelligent suggestions
-- Responsive design for all devices
-- Secure password storage
-- Database-driven architecture
+### AI-Powered Features
+- **AI Chatbot** — Conversational assistant with full awareness of the user's profile (name, skills, experience, education, projects, certifications)
+- **Resume Career Objective** — Groq generates a personalized 2–3 sentence objective based on your profile
+- **Cover Letter Generator** — Paste a job description, choose a tone (Professional / Enthusiastic / Formal / Creative), and get a tailored letter in seconds
+- **Skill Gap Analysis** — AI extracts required skills from any job description and shows which you have vs. which you need to learn
 
-## Quick Start
+### Platform Features
+- Secure session-based authentication
+- Profile completion workflow with onboarding redirect
+- Mobile-responsive navbar with hamburger menu
+- Application status tracking (Applied → Interview → Offer / Rejected)
+- Salary, location, and notes per application
 
-### Prerequisites
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- XAMPP, WAMP, or MAMP (for local development)
-- Composer (for dependency management)
+---
 
-### Installation
+## Tech Stack
 
-1. **Clone or Download the Repository**
-   ```bash
-   cd /Applications/XAMPP/xamppfiles/htdocs/
-   # Place the Skillsync folder here
-   ```
+| Layer | Technology |
+|-------|-----------|
+| Language | PHP 8.2 |
+| Database | MySQL 8.0 / MariaDB 10.4 |
+| AI API | Groq (`llama-3.3-70b-versatile`) |
+| Web Server | Apache 2.4 (XAMPP locally, Apache in Docker) |
+| Frontend | Vanilla HTML, CSS3, JavaScript (ES6+) |
+| Fonts | Sora (headings), Inter (body), Crimson Pro (resume) |
+| Icons | Inline SVG |
+| Local Dev | XAMPP on macOS / Windows |
+| Deployment | Docker + Docker Compose |
 
-2. **Install Dependencies**
-   ```bash
-   composer install
-   ```
-
-3. **Configure Database**
-   
-   Create a new database in MySQL:
-   ```sql
-   CREATE DATABASE skillsync;
-   ```
-
-   Import the database schema:
-   ```bash
-   mysql -u root -p skillsync < database/jobs.sql
-   ```
-
-4. **Configure Environment Variables**
-   
-   Create/Edit `app/config/.env`:
-   ```env
-   DB_HOST=localhost
-   DB_NAME=skillsync
-   DB_USER=root
-   DB_PASS=your_password
-   
-   PERPLEXITY_API_KEY=your_api_key_here
-   ```
-
-5. **Update Database Connection**
-   
-   Edit `app/config/database.php` with your database credentials:
-   ```php
-   $host = 'localhost';
-   $db   = 'skillsync';
-   $user = 'root';
-   $pass = 'your_password';
-   ```
-
-6. **Start Your Server**
-   ```bash
-   # If using XAMPP, start Apache and MySQL
-   # Then navigate to:
-   http://localhost/Skillsync/
-   ```
+---
 
 ## Project Structure
 
 ```
 Skillsync/
-├── public/                      # Publicly accessible files
-│   ├── css/
-│   │   └── style.css           # Main stylesheet
-│   ├── js/
-│   │   └── main.js             # JavaScript functionality
-│   ├── images/
-│   │   └── favicon.svg         # App favicon
-│   ├── create.php              # Resume creation page
-│   ├── chatbot.php             # AI chatbot interface
-│   ├── jobs.php                # Job listings
-│   ├── job_post.php            # Job posting page
-│   └── logout.php              # Logout handler
-│
-├── app/                         # Application core
+├── app/
 │   ├── config/
-│   │   ├── database.php        # Database connection
-│   │   └── .env                # Environment variables
+│   │   ├── database.php              # PDO connection singleton
+│   │   └── .env                      # Environment variables (not committed)
 │   ├── controllers/
-│   │   ├── ProfileController.php    # Profile management
-│   │   ├── ChatController.php       # Chatbot backend
-│   │   └── PerplexityController.php # AI integration
-│   ├── models/                 # Data models
+│   │   ├── chat_backend.php          # AI chatbot handler (Groq)
+│   │   ├── cover_letter_backend.php  # Cover letter generation (Groq)
+│   │   ├── skill_gap_backend.php     # Skill extraction + comparison (Groq)
+│   │   ├── groq_resume.php           # Resume career objective (Groq)
+│   │   ├── application_form.php      # Add/update job application (CRUD)
+│   │   └── ProfileController.php     # Profile management
 │   └── views/
-│       ├── form.php            # Profile completion form
-│       ├── dashboard.php       # User dashboard
-│       ├── profile.php         # User profile page
-│       ├── resume.php          # Resume viewer
-│       ├── resume-builder.php  # Resume builder interface
-│       ├── about.php           # About page
-│       └── developers.php      # Developers page
+│       ├── dashboard.php             # User dashboard
+│       ├── profile.php               # Full profile management
+│       ├── form.php                  # Onboarding profile form
+│       ├── resume.php                # Resume viewer / print
+│       ├── resume-builder.php        # Resume builder interface
+│       ├── applications.php          # Applications tracker
+│       ├── cover-letter.php          # Cover letter generator
+│       └── skill-gap.php             # Skill gap analysis
 │
-├── includes/                    # Reusable components
+├── includes/
 │   ├── auth/
-│   │   └── Auth.php            # Authentication logic
+│   │   └── Auth.php                  # Authentication helpers
 │   └── partials/
-│       ├── navbar.php          # Navigation bar
-│       └── modals.php          # Modal components
+│       └── navbar.php                # Shared mobile-responsive navbar
 │
-├── database/                    # Database files
-│   └── jobs.sql                # Database schema
+├── public/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── main.js
+│   ├── images/
+│   │   └── favicon.svg
+│   ├── chatbot.php                   # AI Assistant page (public entry)
+│   ├── jobs.php                      # Job listings
+│   ├── job_post.php                  # Post a job
+│   └── logout.php                    # Session logout
 │
-├── storage/                     # Storage directories
-│   ├── logs/                   # Application logs
-│   └── uploads/                # User uploads
+├── database/
+│   └── dump.sql                      # Full schema + seed data
 │
-├── vendor/                      # Composer dependencies
+├── storage/
+│   ├── logs/
+│   └── uploads/
 │
-├── index.php                    # Application entry point
-├── composer.json                # Composer configuration
-├── .htaccess                    # Apache configuration
-├── .gitignore                   # Git ignore rules
-└── README.md                    # This file
+├── uploads/
+│   └── profiles/                     # User profile pictures
+│
+├── index.php                         # App entry point / landing page
+├── docker-compose.yml                # Docker orchestration
+├── Dockerfile                        # PHP + Apache container
+├── .env.example                      # Environment template
+├── .htaccess                         # Apache rewrite rules
+├── composer.json
+└── README.md
 ```
 
-## Configuration
+---
 
-### Database Schema
+## Quick Start (Local / XAMPP)
 
-The application requires the following tables:
-- `users` - User accounts and authentication
-- `profiles` - User profile information
-- `resumes` - Resume data
-- `jobs` - Job listings
-- `skills` - Skills database
+### Prerequisites
+- [XAMPP](https://www.apachefriends.org/) with PHP 8.2+ and MySQL
+- A free [Groq API key](https://console.groq.com/keys)
 
-### Environment Variables
+### Steps
 
-Required environment variables in `.env`:
+**1. Place the project**
+```bash
+# macOS
+cp -r Skillsync /Applications/XAMPP/xamppfiles/htdocs/
+
+# Windows
+# Copy to C:\xampp\htdocs\Skillsync
 ```
+
+**2. Create the database**
+
+Open phpMyAdmin (`http://localhost/phpmyadmin`) and run:
+```sql
+CREATE DATABASE skillsync CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+Then import `database/dump.sql`.
+
+**3. Configure environment**
+```bash
+cp .env.example app/config/.env
+```
+Edit `app/config/.env`:
+```env
 DB_HOST=localhost
 DB_NAME=skillsync
 DB_USER=root
 DB_PASS=
 
-PERPLEXITY_API_KEY=your_key_here
+GROQ_API_KEY=gsk_your_key_here
+
 APP_ENV=development
 APP_DEBUG=true
 ```
 
-## Usage
+**4. Start XAMPP**
 
-### Creating an Account
+Start Apache and MySQL from the XAMPP control panel.
 
-1. Visit `http://localhost/Skillsync/`
-2. Click "Sign Up" in the navigation
-3. Enter your email and password
-4. Complete your profile in the form
-5. Access your dashboard
-
-### Building a Resume
-
-1. Log in to your account
-2. Navigate to "Resume Builder"
-3. Fill in your information
-4. Choose a template
-5. Generate your resume
-
-### Using AI Features
-
-- **Skill Suggestions**: The AI analyzes your profile and suggests relevant skills
-- **Job Matching**: Get personalized job recommendations
-- **Resume Analysis**: Upload your resume for detailed feedback
-- **Chatbot**: Ask questions about career development and resume tips
-
-## Technologies Used
-
-### Backend
-- **PHP 7.4+** - Server-side logic
-- **MySQL** - Database management
-- **PDO** - Database abstraction layer
-- **Composer** - Dependency management
-
-### Frontend
-- **HTML5** - Structure
-- **CSS3** - Styling (with custom properties)
-- **JavaScript (ES6+)** - Interactivity
-- **Google Fonts (Poppins)** - Typography
-
-### Integrations
-- **Perplexity AI** - AI-powered suggestions and analysis
-
-## Security Features
-
-- Session-based authentication
-- SQL injection prevention using PDO prepared statements
-- XSS protection
-- Secure password handling
-
-## Development
-
-### Adding New Features
-
-1. **Controllers**: Add to `app/controllers/`
-2. **Views**: Add to `app/views/`
-3. **Models**: Add to `app/models/`
-4. **Routes**: Update `index.php` or create a routing file
-
-### Code Style
-
-- Follow PSR-12 coding standards
-- Use meaningful variable and function names
-- Comment complex logic
-- Keep functions focused and single-purpose
-
-## Troubleshooting
-
-### Common Issues
-
-**Database Connection Errors**
-- Check your database credentials in `app/config/database.php`
-- Ensure MySQL server is running
-- Verify database exists
-
-**Session Errors**
-- Check PHP session configuration
-- Ensure write permissions on session directory
-- Clear browser cookies
-
-**File Upload Issues**
-- Check `storage/uploads/` permissions (755 or 777)
-- Verify PHP upload settings in `php.ini`
-- Check file size limits
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Authors
-
-- **Developers Team** - [Developers Page](developers.php)
-
-## Acknowledgments
-
-- Perplexity AI for intelligent suggestions
-- Google Fonts for typography
-- XAMPP for local development environment
-
-## Support
-
-For support, please visit the [About Us](about.php) page or contact the development team.
+**5. Open the app**
+```
+http://localhost/Skillsync/
+```
 
 ---
 
-## Design Philosophy
+## Docker Deployment
 
-### Core Principles
+> Use this for staging or production. No XAMPP required.
 
-#### Modular Component Architecture
-We follow a modular approach where reusable components (like navbar, footer) are separated into their own files and included where needed. This ensures:
-- **DRY (Don't Repeat Yourself)**: Write once, use everywhere
-- **Easy Maintenance**: Update one file, changes reflect everywhere
-- **Scalability**: Add new pages without rewriting common components
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed
+- A Groq API key
 
-#### Modern Dark Theme Aesthetic
-```css
-Color Palette:
-- Primary: #6366f1 (Indigo) - Main brand color
-- Secondary: #ec4899 (Pink) - Accent highlights
-- Accent: #14b8a6 (Teal) - Tertiary accents
-- Background: #0f172a (Dark Navy) - Main background
-- Cards: #1e293b (Slate) - Card backgrounds
-- Text: #f1f5f9 (Light Gray) - Primary text
-- Muted: #94a3b8 (Medium Gray) - Secondary text
+### Steps
+
+**1. Clone / place the project**
+```bash
+git clone <your-repo> skillsync
+cd skillsync
 ```
 
-#### Smooth Animations & Micro-interactions
-Every user interaction has feedback:
-- Hover effects with sliding backgrounds
-- Icon bounce animations
-- Card lift effects on hover
-- Smooth transitions (0.3s cubic-bezier)
-- Loading animations (fadeInUp)
-
-#### Responsive First
-Mobile → Tablet → Desktop progression:
-- **Mobile (< 768px)**: Icon-only navigation, single column
-- **Tablet (768px - 1024px)**: Compact layout
-- **Desktop (> 1024px)**: Full experience
-
-#### Typography Hierarchy
+**2. Set environment variables**
+```bash
+cp .env.example .env
 ```
-Headings: 'Sora' (bold, modern, distinctive)
-Body: 'Inter' (clean, readable, professional)
-Sizing: clamp() for fluid typography
+Edit `.env` with your values (see [Environment Variables](#environment-variables)).
+
+**3. Build and run**
+```bash
+docker compose up -d --build
 ```
 
-## Component System
-
-### Navbar Component
-
-**File Location**: `/includes/partials/navbar.php`
-
-#### How It Works:
-```php
-// Navbar detects its location automatically
-$base_path = '';
-if (strpos($_SERVER['PHP_SELF'], '/app/views/') !== false) {
-    $base_path = '../../';  // From app/views/ → root
-} elseif (strpos($_SERVER['PHP_SELF'], '/public/') !== false) {
-    $base_path = '../';      // From public/ → root
-}
-
-// Uses base_path for all links
-<a href="<?= $base_path ?>app/views/dashboard.php">Dashboard</a>
-
-// Auto-detects active page
-$current_page = basename($_SERVER['PHP_SELF']);
-class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"
+**4. Import the database**
+```bash
+docker compose exec db mysql -u skillsync_user -p skillsync < database/dump.sql
+# Enter the password from your .env when prompted
 ```
 
-#### Include in Pages:
-```php
-// From /app/views/dashboard.php
-<?php include __DIR__ . '/../../includes/partials/navbar.php'; ?>
-
-// From /public/jobs.php
-<?php include __DIR__ . '/../includes/partials/navbar.php'; ?>
+**5. Open the app**
+```
+http://localhost:8080
 ```
 
-## Path Resolution Guide
+### Useful Docker Commands
 
-### Understanding Relative Paths
+```bash
+# View logs
+docker compose logs -f
 
+# View just the app logs
+docker compose logs -f app
+
+# Stop everything
+docker compose down
+
+# Stop and remove volumes (wipe DB)
+docker compose down -v
+
+# Rebuild after code changes
+docker compose up -d --build
+
+# Access PHP container shell
+docker compose exec app bash
+
+# Access MySQL shell
+docker compose exec db mysql -u skillsync_user -pskillsync_pass skillsync
 ```
-Current File: /app/views/dashboard.php
 
-To reach:
-├── Root (index.php)           → ../../index.php
-├── Config (database.php)      → ../config/database.php
-├── Navbar                     → ../../includes/partials/navbar.php
-├── Public files               → ../../public/jobs.php
-└── Images                     → ../../public/images/favicon.svg
+---
+
+## Environment Variables
+
+Copy `.env.example` to `app/config/.env` (local) or `.env` (Docker root).
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_HOST` | Database hostname | `localhost` / `db` (Docker) |
+| `DB_NAME` | Database name | `skillsync` |
+| `DB_USER` | Database username | `root` |
+| `DB_PASS` | Database password | *(empty for XAMPP root)* |
+| `GROQ_API_KEY` | Your Groq API key | `gsk_...` |
+| `APP_ENV` | Environment mode | `development` / `production` |
+| `APP_DEBUG` | Show PHP errors | `true` / `false` |
+
+---
+
+## Database Schema
+
+### Core Tables
+
+**`users`** — Authentication and basic profile
+```
+id, full_name, email, password_hash, headline, location, phone, bio,
+profile_picture, linkedin_url, github_url, portfolio_url,
+profile_completed, created_at, updated_at
 ```
 
+**`education`** — User education history
 ```
-Current File: /public/jobs.php
+id, user_id, institution, degree, field_of_study, start_year, end_year, description
+```
 
-To reach:
-├── Root (index.php)           → ../index.php
-├── Config (database.php)      → ../app/config/database.php
-├── Navbar                     → ../includes/partials/navbar.php
-├── Views                      → ../app/views/dashboard.php
-└── Images                     → images/favicon.svg (same folder)
+**`experience`** — Work experience
 ```
+id, user_id, company, position, start_date, end_date, description, is_current
+```
+
+**`skills`** — User skills
+```
+id, user_id, skill_name, created_at
+```
+
+**`certifications`** — Certifications and credentials
+```
+id, user_id, title, issuer, cert_date, url
+```
+
+**`projects`** — Portfolio projects
+```
+id, user_id, project_name, description, technologies, project_url
+```
+
+**`jobs`** — Job board listings
+```
+id, title, company, description, location, type, salary, posted_by, created_at
+```
+
+**`applications`** — Job application tracker
+```sql
+CREATE TABLE applications (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT NOT NULL,
+    job_title   VARCHAR(255) NOT NULL,
+    company     VARCHAR(255) NOT NULL,
+    status      ENUM('Applied','Interview','Offer','Rejected') DEFAULT 'Applied',
+    date_applied DATE NOT NULL,
+    salary      VARCHAR(100),
+    location    VARCHAR(255),
+    job_url     TEXT,
+    notes       TEXT,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_date (date_applied)
+);
+```
+
+> Run the migration by visiting `http://localhost/Skillsync/create_applications_table.php` once.
+
+---
+
+## AI Integration
+
+All AI features use **Groq's** free API tier with the `llama-3.3-70b-versatile` model.
+
+### Chatbot (`chat_backend.php`)
+- Fetches the full user profile from the database on each request
+- Injects structured context (name, education, experience, skills, certifications, projects) into the system prompt
+- Maintains conversation history in `$_SESSION['chat_history']`
+- Returns chat history as JSON; the frontend renders the full list
+
+### Cover Letter Generator (`cover_letter_backend.php`)
+- Accepts job title, company name, description, and tone via POST
+- Pulls user profile data automatically
+- Sends a tailored prompt to Groq
+- Returns a 250–300 word professional cover letter
+
+### Skill Gap Analysis (`skill_gap_backend.php`)
+- Accepts a raw job description via POST
+- Groq extracts a JSON array of required skills (temperature: 0.3 for precision)
+- PHP compares extracted skills against the user's `skills` table (case-insensitive)
+- Returns `matched` and `missing` arrays
+
+### Resume Objective (`groq_resume.php`)
+- Accepts form data (name, education, skills, experience) via POST
+- Generates a concise 2–3 sentence career objective
+- Returns plain text for the resume builder textarea
+
+### Rate Limits (Free Tier)
+| Metric | Limit |
+|--------|-------|
+| Requests per minute | 30 |
+| Tokens per minute | 14,400 |
+| Tokens per day | 500,000 |
+
+---
 
 ## Design System
 
-### CSS Variables
-All components use CSS variables for consistency:
-```css
-:root {
-  /* Colors */
-  --primary: #6366f1;
-  --secondary: #ec4899;
-  --accent: #14b8a6;
-  
-  /* Backgrounds */
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  
-  /* Text */
-  --text-light: #f1f5f9;
-  --text-gray: #94a3b8;
-  
-  /* Borders & Shadows */
-  --border: #334155;
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-  
-  /* Gradients */
-  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-```
+Skillsync AI uses a strict design system documented in `Design.md`.
 
-### Animation Timing
-```css
-/* Fast interactions */
-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+### Color Palette
+| Token | Value | Use |
+|-------|-------|-----|
+| `--bg` | `#080e1a` | Page background |
+| `--bg-card` | `#111827` | Card surfaces |
+| `--bg-lift` | `#161f31` | Hover / focused inputs |
+| `--border` | `#1f2d45` | Default borders |
+| `--border-lit` | `#2e3f5e` | Hover borders |
+| `--primary` | `#6366f1` | Indigo — brand, AI features |
+| `--secondary` | `#ec4899` | Pink — jobs, opportunities |
+| `--accent` | `#14b8a6` | Teal — building, creating |
+| `--text` | `#f1f5f9` | Primary text |
+| `--muted` | `#64748b` | Secondary text |
 
-/* Card hovers */
-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+### Gradients
+| Variable | Colors | Used for |
+|----------|--------|----------|
+| `--g1` | Purple → Violet | Primary actions, AI |
+| `--g2` | Pink → Rose | Jobs, opportunities |
+| `--g3` | Teal → Cyan | Resume, building |
+| `--g4` | Amber → Orange | Stats, progress |
 
-/* Loading animations */
-animation: fadeInUp 0.6s ease-out;
-```
+### Typography
+- **Sora** — Headings only (`font-family: 'Sora'`)
+- **Inter** — All UI text, labels, buttons
+- **Crimson Pro** — Resume document only (print context)
+- `clamp()` for fluid heading sizes
 
-## Responsive Breakpoints
-
-```css
-/* Mobile First Approach */
-
-/* Small Mobile */
-@media (max-width: 480px) {
-  .navbar .logo { font-size: 1.2rem; }
-  .nav-links a svg { width: 16px; height: 16px; }
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .nav-links a span { display: none; }  /* Icons only */
-  .dashboard-cards { grid-template-columns: 1fr; }
-}
-
-/* Tablet */
-@media (max-width: 1024px) {
-  .nav-links { gap: 0.3rem; }
-  .nav-links a { padding: 0.6rem 1rem; }
-}
-
-/* Desktop */
-@media (min-width: 1025px) {
-  /* Full experience */
-}
-```
-
-## Best Practices Implemented
-
-### Security
-```php
-// Session management
-session_start();
-
-// Authentication checks
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../index.php');
-    exit;
-}
-
-// SQL injection prevention
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
-
-// XSS prevention
-echo htmlspecialchars($username);
-```
-
-### Performance
-- CSS variables for instant theme changes
-- Lazy loading animations (staggered delays)
-- Minimal JavaScript (pure CSS animations)
-- Optimized SVG icons (inline, no requests)
-
-### Maintainability
-- Single source of truth for styles (CSS variables)
-- Reusable components (navbar, footer)
-- Clear file organization
-- Commented code sections
-
-### Accessibility
-- Semantic HTML5 elements
-- Proper heading hierarchy (h1 → h3)
-- High contrast text (WCAG AA compliant)
-- Keyboard navigation support
-
-## Component Reusability
-
-### How to Add Navbar to Any Page
-
-**Step 1**: Create your page in appropriate directory
-```php
-// /app/views/newpage.php or /public/newpage.php
-```
-
-**Step 2**: Include navbar
-```php
-<!DOCTYPE html>
-<html>
-<head>
-  <!-- Your head content -->
-  <style>
-    /* Include CSS variables */
-    :root {
-      --primary: #6366f1;
-      /* ...other variables... */
-    }
-  </style>
-</head>
-<body>
-  <!-- Include navbar -->
-  <?php include __DIR__ . '/../../includes/partials/navbar.php'; ?>
-  
-  <!-- Your page content -->
-</body>
-</html>
-```
-
-**Step 3**: No additional configuration needed
-- Navbar auto-detects location
-- Paths resolve automatically
-- Active state works immediately
-
-## Key Innovations
-
-### Self-Aware Components
-Navbar knows where it is and adjusts paths automatically:
-```php
-// No manual configuration needed
-if (strpos($_SERVER['PHP_SELF'], '/app/views/') !== false) {
-    $base_path = '../../';
-}
-```
-
-### Gradient System
-Four distinct gradients for visual hierarchy:
-```css
---gradient-1: Purple/Violet (Primary features)
---gradient-2: Pink/Red (Jobs/Opportunities)
---gradient-3: Blue/Cyan (Building/Creating)
---gradient-4: Pink/Yellow (Analysis/AI)
-```
-
-### Microanimations
-Every interaction is delightful:
-- Icon bounce on hover
-- Sliding background reveals
-- Card lift with shadow
-- Pulse effect on AI button
-
-## Files Overview
-
-| File | Purpose | Includes |
-|------|---------|----------|
-| `navbar.php` | Navigation component | Standalone, auto-configuring |
-| `dashboard.php` | Main user dashboard | navbar.php |
-| `index.php` | Landing page | Own navigation (public) |
-| `database.php` | PDO connection | None (config) |
-
-## Extension Guide
-
-### To Add a New Page:
-
-1. **Create file** in `/app/views/` or `/public/`
-2. **Include navbar**: `<?php include __DIR__ . '/../../includes/partials/navbar.php'; ?>`
-3. **Add CSS variables** in `<style>` tag
-4. **Write content** with existing classes
-5. **Done** - Navbar automatically updates
-
-### To Modify Design:
-
-1. **Colors**: Update CSS variables in `:root`
-2. **Animations**: Adjust transition timings
-3. **Spacing**: Modify padding/gap values
-4. **Breakpoints**: Adjust media queries
+### Animation
+- Entrances: `fadeUp` (18px + opacity, 0.5s)
+- Stagger: 0.1s increments
+- Hover lifts: `translateY(-5px)` + border illuminate + accent strip reveal
+- Easing: `cubic-bezier(0.4, 0, 0.2, 1)`
 
 ---
 
-**Design System**: Modern, Dark, Gradient-heavy, Animated
-**Architecture**: Modular, Component-based, Self-configuring
-**Philosophy**: Beautiful, Functional, Maintainable
+## File Placement Guide
+
+```
+Skillsync/
+├── index.php                                   ← Landing page
+├── app/
+│   ├── config/
+│   │   ├── database.php
+│   │   └── .env                                ← Your secrets
+│   ├── controllers/
+│   │   ├── chat_backend.php                    ← Chatbot AI
+│   │   ├── cover_letter_backend.php            ← Cover letter AI
+│   │   ├── skill_gap_backend.php               ← Skill gap AI
+│   │   ├── groq_resume.php                     ← Resume objective AI
+│   │   ├── application_form.php                ← Applications CRUD
+│   │   └── ProfileController.php
+│   └── views/
+│       ├── dashboard.php
+│       ├── profile.php
+│       ├── form.php
+│       ├── resume.php
+│       ├── resume-builder.php
+│       ├── applications.php                    ← NEW: App tracker
+│       ├── cover-letter.php                    ← NEW: Cover letters
+│       └── skill-gap.php                       ← NEW: Skill gap
+├── includes/
+│   └── partials/
+│       └── navbar.php                          ← Shared navbar (updated)
+└── public/
+    ├── chatbot.php
+    ├── jobs.php
+    ├── job_post.php
+    └── logout.php
+```
+
+### Path Rules
+Pages in `/app/views/` use paths like:
+- Config: `../config/database.php`
+- Navbar: `../../includes/partials/navbar.php`
+- Public: `../../public/images/favicon.svg`
+
+Pages in `/public/` use paths like:
+- Config: `../app/config/database.php`
+- Navbar: `../includes/partials/navbar.php`
+
+---
+
+## Troubleshooting
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Blank white page / HTTP 500 | PHP error, wrong include path | Enable `display_errors` or check Apache logs |
+| "Groq API key not configured" | `.env` missing or wrong key | Add `GROQ_API_KEY=gsk_...` to `app/config/.env` |
+| AI responses not personalized | DB queries failing | Run debug script; check column names match schema |
+| "Table applications doesn't exist" | Migration not run | Visit `create_applications_table.php` in browser |
+| Hamburger menu not showing | Viewport width threshold | Test at < 900px width; clear cache |
+| Docker: DB connection refused | Container not ready | Wait 10s after `docker compose up`; run health check |
+| Docker: Permission denied on uploads | File ownership | `docker compose exec app chmod -R 777 /var/www/html/uploads` |
+| Session not persisting | Cookie / session config | Check `session_start()` is first line; no output before headers |
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Follow the existing design system (`Design.md`)
+4. Commit: `git commit -m "feat: add my feature"`
+5. Push: `git push origin feature/my-feature`
+6. Open a Pull Request
+
+### Code Conventions
+- PHP: PSR-12 coding standard
+- SQL: Use PDO prepared statements always — no raw interpolation
+- CSS: Follow the existing variable system; no hardcoded hex values
+- JS: Vanilla ES6+; no jQuery or external libraries
+
+---
+
+## License
+
+MIT License — see `LICENSE` for details.
+
+---
+
+## Acknowledgements
+
+- [Groq](https://groq.com/) — ultra-fast LLM inference (free tier)
+- [Google Fonts](https://fonts.google.com/) — Sora, Inter, Crimson Pro
+- [XAMPP](https://www.apachefriends.org/) — local development environment
+- Icons — all inline SVG, zero external requests
+
+---
+
+<div align="center">
+</div>
