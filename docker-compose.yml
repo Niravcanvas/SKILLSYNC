@@ -11,6 +11,9 @@ services:
     restart: unless-stopped
     expose:
       - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.skillsync.loadbalancer.server.port=80"
     environment:
       DB_HOST: db
       DB_NAME: ${DB_NAME:-skillsync}
@@ -41,8 +44,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./database/dump.sql:/docker-entrypoint-initdb.d/dump.sql:ro
-    ports:
-      - "3307:3306"          # 3307 on host to avoid conflict with local MySQL
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${DB_ROOT_PASS:-root_secret}"]
       interval: 10s
@@ -52,13 +53,13 @@ services:
     networks:
       - skillsync_net
 
-  # ─── phpMyAdmin (optional, for DB management) ───────────────────────────────
+  # ─── phpMyAdmin (optional) ───────────────────────────────────────────────────
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: skillsync_phpmyadmin
     restart: unless-stopped
-    ports:
-      - "8081:80"
+    expose:
+      - "80"
     environment:
       PMA_HOST: db
       PMA_USER: ${DB_USER:-skillsync_user}
@@ -70,7 +71,7 @@ services:
     networks:
       - skillsync_net
     profiles:
-      - tools              # Only starts with: docker compose --profile tools up
+      - tools
 
 volumes:
   db_data:
