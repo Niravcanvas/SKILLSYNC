@@ -46,119 +46,111 @@ require_once __DIR__ . '/../config/database.php';
 
 // Fetch user data for context
 try {
-    // Get user profile
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    // Get user profile from users table
+    $stmt = $pdo->prepare("SELECT full_name, headline, location, email, phone, bio FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    $stmt = $pdo->prepare("SELECT * FROM profiles WHERE user_id = ?");
-    $stmt->execute([$userId]);
-    $profile = $stmt->fetch(PDO::FETCH_ASSOC);
-    
     // Get education
-    $stmt = $pdo->prepare("SELECT * FROM education WHERE user_id = ? ORDER BY start_date DESC");
+    $stmt = $pdo->prepare("SELECT institution, degree, field_of_study, start_year, end_year FROM education WHERE user_id = ? ORDER BY start_year DESC");
     $stmt->execute([$userId]);
     $education = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get experience
-    $stmt = $pdo->prepare("SELECT * FROM experience WHERE user_id = ? ORDER BY start_date DESC");
+    $stmt = $pdo->prepare("SELECT company, position, start_date, end_date, description FROM experience WHERE user_id = ? ORDER BY start_date DESC");
     $stmt->execute([$userId]);
     $experience = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get skills
-    $stmt = $pdo->prepare("SELECT skill_name, proficiency_level FROM skills WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT skill_name FROM skills WHERE user_id = ?");
     $stmt->execute([$userId]);
     $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get certifications
-    $stmt = $pdo->prepare("SELECT * FROM certifications WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT title, issuer, cert_date, url FROM certifications WHERE user_id = ?");
     $stmt->execute([$userId]);
     $certifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get projects
-    $stmt = $pdo->prepare("SELECT * FROM projects WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT project_name, description, technologies, project_url FROM projects WHERE user_id = ?");
     $stmt->execute([$userId]);
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Build user context
-    $userContext = "User Profile:\n";
-    $userContext .= "Name: " . ($user['full_name'] ?? 'Not provided') . "\n";
-    $userContext .= "Email: " . ($user['email'] ?? '') . "\n";
+    $userContext = "=== USER PROFILE ===\n\n";
     
-    if ($profile) {
-        $userContext .= "Phone: " . ($profile['phone'] ?? 'Not provided') . "\n";
-        $userContext .= "Location: " . ($profile['address'] ?? 'Not provided') . "\n";
-        $userContext .= "Career Level: " . ($profile['career_level'] ?? 'Not specified') . "\n";
-        $userContext .= "Job Title: " . ($profile['job_title'] ?? 'Not specified') . "\n";
-        if (!empty($profile['bio'])) {
-            $userContext .= "Bio: " . $profile['bio'] . "\n";
+    // Basic info
+    if ($user) {
+        $userContext .= "Name: " . ($user['full_name'] ?? 'Not provided') . "\n";
+        $userContext .= "Current Role: " . ($user['headline'] ?? 'Not specified') . "\n";
+        $userContext .= "Location: " . ($user['location'] ?? 'Not specified') . "\n";
+        $userContext .= "Email: " . ($user['email'] ?? '') . "\n";
+        $userContext .= "Phone: " . ($user['phone'] ?? 'Not provided') . "\n";
+        
+        if (!empty($user['bio'])) {
+            $userContext .= "\nBio:\n" . $user['bio'] . "\n";
         }
     }
     
     // Education
     if (!empty($education)) {
-        $userContext .= "\nEducation:\n";
+        $userContext .= "\n=== EDUCATION ===\n";
         foreach ($education as $edu) {
-            $userContext .= "- " . $edu['degree'] . " in " . $edu['field_of_study'];
-            $userContext .= " at " . $edu['institution'];
-            $userContext .= " (" . date('Y', strtotime($edu['start_date']));
-            if ($edu['is_current']) {
-                $userContext .= " - Present)\n";
-            } else {
-                $userContext .= " - " . date('Y', strtotime($edu['end_date'])) . ")\n";
-            }
+            $userContext .= "• " . ($edu['degree'] ?? 'Degree') . " in " . ($edu['field_of_study'] ?? 'Field');
+            $userContext .= "\n  " . ($edu['institution'] ?? 'Institution');
+            $userContext .= " (" . ($edu['start_year'] ?? 'Year') . " - " . ($edu['end_year'] ?? 'Year') . ")\n";
         }
     }
     
     // Experience
     if (!empty($experience)) {
-        $userContext .= "\nWork Experience:\n";
+        $userContext .= "\n=== WORK EXPERIENCE ===\n";
         foreach ($experience as $exp) {
-            $userContext .= "- " . $exp['job_title'] . " at " . $exp['company'];
-            $userContext .= " (" . date('M Y', strtotime($exp['start_date']));
-            if ($exp['is_current']) {
-                $userContext .= " - Present)\n";
-            } else {
-                $userContext .= " - " . date('M Y', strtotime($exp['end_date'])) . ")\n";
+            $userContext .= "• " . ($exp['position'] ?? 'Position') . " at " . ($exp['company'] ?? 'Company');
+            
+            if ($exp['start_date']) {
+                $start = date('M Y', strtotime($exp['start_date']));
+                $end = $exp['end_date'] ? date('M Y', strtotime($exp['end_date'])) : 'Present';
+                $userContext .= "\n  (" . $start . " - " . $end . ")";
             }
+            
             if (!empty($exp['description'])) {
-                $userContext .= "  " . $exp['description'] . "\n";
+                $userContext .= "\n  " . $exp['description'];
             }
+            $userContext .= "\n";
         }
     }
     
     // Skills
     if (!empty($skills)) {
-        $userContext .= "\nSkills:\n";
-        $skillsByLevel = ['Beginner' => [], 'Intermediate' => [], 'Advanced' => [], 'Expert' => []];
-        foreach ($skills as $skill) {
-            $level = $skill['proficiency_level'] ?? 'Intermediate';
-            $skillsByLevel[$level][] = $skill['skill_name'];
-        }
-        foreach ($skillsByLevel as $level => $skillList) {
-            if (!empty($skillList)) {
-                $userContext .= "- $level: " . implode(', ', $skillList) . "\n";
-            }
-        }
+        $userContext .= "\n=== SKILLS ===\n";
+        $skillNames = array_column($skills, 'skill_name');
+        $userContext .= implode(', ', $skillNames) . "\n";
     }
     
     // Certifications
     if (!empty($certifications)) {
-        $userContext .= "\nCertifications:\n";
+        $userContext .= "\n=== CERTIFICATIONS ===\n";
         foreach ($certifications as $cert) {
-            $userContext .= "- " . $cert['certification_name'];
-            $userContext .= " from " . $cert['issuing_organization'];
-            $userContext .= " (" . date('Y', strtotime($cert['issue_date'])) . ")\n";
+            $userContext .= "• " . ($cert['title'] ?? 'Certification');
+            $userContext .= " - " . ($cert['issuer'] ?? 'Issuer');
+            if ($cert['cert_date']) {
+                $userContext .= " (" . date('Y', strtotime($cert['cert_date'])) . ")";
+            }
+            $userContext .= "\n";
         }
     }
     
     // Projects
     if (!empty($projects)) {
-        $userContext .= "\nProjects:\n";
+        $userContext .= "\n=== PROJECTS ===\n";
         foreach ($projects as $proj) {
-            $userContext .= "- " . $proj['project_name'];
+            $userContext .= "• " . ($proj['project_name'] ?? 'Project');
             if (!empty($proj['description'])) {
-                $userContext .= ": " . $proj['description'];
+                $userContext .= "\n  " . $proj['description'];
+            }
+            if (!empty($proj['technologies'])) {
+                $userContext .= "\n  Tech: " . $proj['technologies'];
             }
             $userContext .= "\n";
         }
@@ -166,6 +158,7 @@ try {
     
 } catch (PDOException $e) {
     $userContext = "User profile data unavailable.";
+    error_log("Database error in chat_backend: " . $e->getMessage());
 }
 
 // Get conversation history from session
@@ -182,9 +175,9 @@ $_SESSION['chat_history'][] = [
 
 // Prepare messages for Groq API with user context
 $systemPrompt = "You are Skillsync AI, a helpful career assistant. You help users with resume building, career advice, skill development, and job search strategies. Be concise, professional, and encouraging. Keep responses under 150 words unless the user asks for detailed explanations.\n\n";
-$systemPrompt .= "Here is the user's profile information to help you give personalized advice:\n\n";
+$systemPrompt .= "Here is the user's complete profile:\n\n";
 $systemPrompt .= $userContext;
-$systemPrompt .= "\n\nUse this information to provide tailored career guidance, resume tips, and skill recommendations. Reference their actual experience and skills when giving advice.";
+$systemPrompt .= "\n\nUse this information to provide personalized, tailored career guidance. Reference their actual experience, skills, education, and projects when giving advice. Be specific and actionable.";
 
 $messages = [
     [
