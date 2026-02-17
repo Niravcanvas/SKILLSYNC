@@ -1,83 +1,34 @@
-version: '3.9'
+version: '3.8'
 
 services:
-
-  # ─── PHP + Apache App ───────────────────────────────────────────────────────
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: skillsync_app
-    restart: unless-stopped
-    expose:
-      - "80"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.skillsync.loadbalancer.server.port=80"
+    build: .
+    restart: always
+    depends_on:
+      - db
     environment:
       DB_HOST: db
-      DB_NAME: ${DB_NAME:-skillsync}
-      DB_USER: ${DB_USER:-skillsync_user}
-      DB_PASS: ${DB_PASS:-skillsync_pass}
+      DB_NAME: skillsync_ai
+      DB_USER: root
+      DB_PASS: ${DB_PASS:-supersecretpassword}
       GROQ_API_KEY: ${GROQ_API_KEY}
-      APP_ENV: ${APP_ENV:-production}
-      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_ENV: production
+      APP_DEBUG: false
     volumes:
-      - ./uploads:/var/www/html/uploads
-      - ./storage/logs:/var/www/html/storage/logs
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - skillsync_net
+      - uploads_data:/var/www/html/uploads
+      - storage_data:/var/www/html/storage
 
-  # ─── MySQL Database ──────────────────────────────────────────────────────────
   db:
     image: mysql:8.0
-    container_name: skillsync_db
-    restart: unless-stopped
+    restart: always
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-skillsync}
-      MYSQL_USER: ${DB_USER:-skillsync_user}
-      MYSQL_PASSWORD: ${DB_PASS:-skillsync_pass}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-root_secret}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-supersecretpassword}
+      MYSQL_DATABASE: skillsync_ai
     volumes:
       - db_data:/var/lib/mysql
-      - ./database/dump.sql:/docker-entrypoint-initdb.d/dump.sql:ro
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${DB_ROOT_PASS:-root_secret}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - skillsync_net
-
-  # ─── phpMyAdmin (optional) ───────────────────────────────────────────────────
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: skillsync_phpmyadmin
-    restart: unless-stopped
-    expose:
-      - "80"
-    environment:
-      PMA_HOST: db
-      PMA_USER: ${DB_USER:-skillsync_user}
-      PMA_PASSWORD: ${DB_PASS:-skillsync_pass}
-      UPLOAD_LIMIT: 64M
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - skillsync_net
-    profiles:
-      - tools
+      - ./database/dump.sql:/docker-entrypoint-initdb.d/dump.sql
 
 volumes:
   db_data:
-    name: skillsync_db_data
-
-networks:
-  skillsync_net:
-    name: skillsync_network
-    driver: bridge
+  uploads_data:
+  storage_data:
