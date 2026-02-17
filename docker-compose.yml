@@ -9,8 +9,8 @@ services:
       dockerfile: Dockerfile
     container_name: skillsync_app
     restart: unless-stopped
-    ports:
-      - "8080:80"
+    expose:
+      - "80"
     environment:
       DB_HOST: db
       DB_NAME: ${DB_NAME:-skillsync}
