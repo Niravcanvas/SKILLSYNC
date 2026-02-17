@@ -25,9 +25,13 @@ COPY . .
 # Install PHP dependencies (if any)
 RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction; fi
 
+# Create directories that may not exist in the repo
+RUN mkdir -p storage/logs storage/uploads uploads/profiles
+
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
     && chmod -R 777 /var/www/html/storage \
     && chmod -R 777 /var/www/html/uploads
 
