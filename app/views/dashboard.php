@@ -9,25 +9,24 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../config/database.php';
 
 try {
-    // ── User — use full_name, not email split ──────────────────────────────
     $stmt = $pdo->prepare("SELECT full_name, email FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user     = $stmt->fetch(PDO::FETCH_ASSOC);
     $username = $user['full_name'] ?? explode('@', $user['email'])[0] ?? 'User';
 
-    // ── Skills — correct column is skill_name, filter by logged-in user ────
+    // ── Skills — correct column is skill_name ─────────────────────────────
     $stmt   = $pdo->prepare("SELECT skill_name FROM skills WHERE user_id = ? LIMIT 5");
     $stmt->execute([$_SESSION['user_id']]);
     $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ── Jobs — all jobs, newest first ──────────────────────────────────────
+    // ── Jobs — all jobs, newest first ────────────────────────────────────
     $stmt = $pdo->query("SELECT title, company, location FROM jobs ORDER BY posted_on DESC LIMIT 5");
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $skill_count = count($skills);
     $job_count   = count($jobs);
 
-    // ── Profile completeness — from users table directly ───────────────────
+    // ── Profile completeness ──────────────────────────────────────────────
     $stmt = $pdo->prepare("SELECT full_name, bio, location, headline, phone, profile_picture FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $profile = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -78,15 +77,7 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
     }
 
     html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-top: 80px;
-    }
-
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-top: 80px; }
     body::before {
       content: ''; position: fixed; inset: 0; z-index: -1;
       background:
@@ -96,7 +87,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
 
     .wrap { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
 
-    /* DB banner */
     .db-banner {
       display: flex; align-items: center; gap: .75rem;
       background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25);
@@ -104,7 +94,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       padding: .85rem 1.25rem; font-size: .9rem; margin-bottom: 2rem;
     }
 
-    /* Hero */
     .hero { margin-bottom: 2rem; }
     .hero-inner {
       background: var(--bg-card); border: 1px solid var(--border);
@@ -124,30 +113,13 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       border: 1px solid rgba(99,102,241,.2); padding: .28rem .85rem;
       border-radius: 999px; margin-bottom: 1.2rem;
     }
-    .hero-label .dot {
-      width: 6px; height: 6px; background: var(--primary);
-      border-radius: 50%; animation: pulse 2s infinite;
-    }
+    .hero-label .dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-
-    .hero h1 {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-      font-weight: 700; letter-spacing: -.025em; line-height: 1.25;
-      margin-bottom: .6rem;
-    }
-    .hero h1 em {
-      font-style: normal;
-      background: var(--g1);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
+    .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.25; margin-bottom: .6rem; }
+    .hero h1 em { font-style: normal; background: var(--g1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero p { color: var(--muted); font-size: 1rem; max-width: 520px; }
 
-    /* Stats */
-    .stats-row {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 1rem; margin-bottom: 1.25rem;
-    }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
     .stat {
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 1.25rem; padding: 1.4rem 1.5rem;
@@ -155,11 +127,7 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       transition: border-color .3s, transform .3s;
     }
     .stat:hover { border-color: var(--border-lit); transform: translateY(-3px); }
-    .stat-icon {
-      width: 36px; height: 36px; border-radius: .65rem;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: .6rem;
-    }
+    .stat-icon { width: 36px; height: 36px; border-radius: .65rem; display: flex; align-items: center; justify-content: center; margin-bottom: .6rem; }
     .bg-purple { background: rgba(99,102,241,.15); }
     .bg-teal   { background: rgba(20,184,166,.15); }
     .bg-pink   { background: rgba(236,72,153,.15); }
@@ -173,24 +141,16 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
     .prog-wrap  { width: 100%; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: .6rem; }
     .prog-fill  { height: 100%; background: var(--g4); border-radius: 999px; }
 
-    /* Grid */
     .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
 
-    /* Card */
     .card {
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 1.5rem; padding: 2rem;
       transition: border-color .35s, transform .35s, box-shadow .35s;
       position: relative; overflow: hidden;
     }
-    .card:hover {
-      border-color: var(--border-lit); transform: translateY(-5px);
-      box-shadow: 0 20px 50px rgba(0,0,0,.3);
-    }
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      transform: scaleX(0); transform-origin: left; transition: transform .4s ease;
-    }
+    .card:hover { border-color: var(--border-lit); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; transform: scaleX(0); transform-origin: left; transition: transform .4s ease; }
     .card:hover::before { transform: scaleX(1); }
     .c1::before { background: var(--g1); }
     .c2::before { background: var(--g2); }
@@ -219,7 +179,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
     .job-meta   { font-size: .77rem; color: var(--muted); white-space: nowrap; }
     .empty-note { text-align: center; padding: 1.75rem 1rem; color: var(--muted); font-size: .86rem; font-style: italic; }
 
-    /* Resume – full width */
     .card.wide  { grid-column: 1 / -1; }
     .resume-inner { display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
     .resume-text .card-title { font-size: 1.3rem; margin-bottom: .4rem; }
@@ -232,7 +191,7 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       border: none; border-radius: .85rem; cursor: pointer; text-decoration: none;
       transition: transform .25s, box-shadow .25s, filter .25s;
     }
-    .btn-primary { background: var(--g1); color: #fff; box-shadow: 0 4px 20px rgba(99,102,241,.35); }
+    .btn-primary { background: var(--g1); color: #fff !important; box-shadow: 0 4px 20px rgba(99,102,241,.35); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,.55); filter: brightness(1.08); }
 
     .resume-blobs { display: flex; gap: .75rem; flex-shrink: 0; }
@@ -240,19 +199,16 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
     .blob1 { background: rgba(99,102,241,.15); }
     .blob2 { background: rgba(20,184,166,.12); }
 
-    /* Footer */
     footer { border-top: 1px solid var(--border); padding: 2rem; }
     .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     .footer-brand { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .95rem; background: var(--g1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .footer-copy  { font-size: .8rem; color: var(--muted); }
 
-    /* Animations */
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
     .hero-inner { animation: fadeUp .5s ease both; }
     .stats-row  { animation: fadeUp .5s .1s ease both; }
     .main-grid  { animation: fadeUp .5s .2s ease both; }
 
-    /* Responsive */
     @media (max-width: 900px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .main-grid { grid-template-columns: 1fr; }
@@ -278,11 +234,10 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
         <circle cx="12" cy="16" r=".5" fill="currentColor"/>
       </svg>
-      Database unavailable — some sections may show placeholder data until the connection is restored.
+      Database unavailable — some sections may show placeholder data.
     </div>
     <?php endif; ?>
 
-    <!-- Hero -->
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-label"><span class="dot"></span> Dashboard</div>
@@ -291,7 +246,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       </div>
     </section>
 
-    <!-- Stats / Progress -->
     <div class="stats-row">
       <div class="stat">
         <div class="stat-icon bg-purple">
@@ -333,10 +287,8 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
       </div>
     </div>
 
-    <!-- Main Cards -->
     <div class="main-grid">
 
-      <!-- AI Skills -->
       <div class="card c1">
         <div class="card-head">
           <div class="card-head-left">
@@ -348,7 +300,7 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
         <?php if (!empty($skills)): ?>
           <ul class="item-list">
             <?php foreach ($skills as $s): ?>
-              <li><span class="item-dot dot-purple"></span><?= htmlspecialchars($s['name']) ?></li>
+              <li><span class="item-dot dot-purple"></span><?= htmlspecialchars($s['skill_name'] ?? '') ?></li>
             <?php endforeach; ?>
           </ul>
         <?php else: ?>
@@ -356,7 +308,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
         <?php endif; ?>
       </div>
 
-      <!-- Jobs -->
       <div class="card c2">
         <div class="card-head">
           <div class="card-head-left">
@@ -380,7 +331,6 @@ $greet = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Ev
         <?php endif; ?>
       </div>
 
-      <!-- Resume Builder – full width banner -->
       <div class="card c3 wide">
         <div class="resume-inner">
           <div class="resume-text">
