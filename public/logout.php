@@ -1,13 +1,10 @@
 <?php
-// NO whitespace or empty lines before <?php
-
 session_start();
 
-// Clear all session data
-$_SESSION = [];      // optional, ensures session array is cleared
-session_unset();     // frees all session variables
-session_destroy();   // destroys the session
+$_SESSION = [];
+session_unset();
+session_destroy();
 
-// Redirect to login page
-header("Location: index.php");
+// index.php is at root, one level up from /public/
+header("Location: ../index.php");
 exit();

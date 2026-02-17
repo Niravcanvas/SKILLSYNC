@@ -1,12 +1,7 @@
 <?php
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-// Include the main resume handling logic
 require_once __DIR__ . "/resume.php";
-
-// Get username for greeting
 $username = explode('@', $email)[0];
 ?>
 <!DOCTYPE html>
@@ -15,989 +10,738 @@ $username = explode('@', $email)[0];
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resume Builder – Skillsync AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@300;400;500;600&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="../../public/images/favicon.svg">
 <style>
-:root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #818cf8;
-  --secondary: #ec4899;
-  --accent: #14b8a6;
-  --success: #10b981;
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --bg-light: #f8fafc;
-  --text-light: #f1f5f9;
-  --text-gray: #94a3b8;
-  --text-dark: #1e293b;
-  --border: #334155;
-  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-dark);
-  color: var(--text-light);
-  line-height: 1.6;
-  min-height: 100vh;
-  padding-top: 80px;
-}
-
-/* Animated Background */
-.bg-pattern {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  opacity: 0.03;
-  background-image: 
-    radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--secondary) 0%, transparent 50%);
-  animation: bgMove 20s ease-in-out infinite;
-}
-
-@keyframes bgMove {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(5deg); }
-}
-
-/* Welcome Section */
-.resume-welcome {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  padding: 3rem;
-  margin: 0 2rem 3rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.resume-welcome::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-1);
-}
-
-.resume-welcome h1 {
-  font-family: 'Sora', sans-serif;
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  font-weight: 700;
-  margin-bottom: 1rem;
-  letter-spacing: -0.02em;
-}
-
-.resume-welcome h1 span {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.resume-welcome p {
-  font-size: 1.1rem;
-  color: var(--text-gray);
-}
-
-/* Dashboard Grid */
-.dashboard-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 0 2rem 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
-@media(max-width: 1100px){
-  .dashboard-content { 
-    grid-template-columns: 1fr;
+  :root {
+    --primary:    #6366f1;
+    --secondary:  #ec4899;
+    --accent:     #14b8a6;
+    --success:    #10b981;
+    --bg:         #080e1a;
+    --bg-card:    #111827;
+    --bg-input:   #0d1424;
+    --bg-lift:    #161f31;
+    --border:     #1f2d45;
+    --border-lit: #2e3f5e;
+    --text:       #f1f5f9;
+    --muted:      #64748b;
+    --g1: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --g2: linear-gradient(135deg, #ec4899, #f43f5e);
+    --radius: 1.25rem;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-}
 
-/* Card Styles */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 2.5em;
-  border-radius: 1.5rem;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
+  html { scroll-behavior: smooth; }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--gradient-1);
-  opacity: 0;
-  transition: var(--transition);
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.card h3 {
-  font-family: 'Sora', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: var(--text-light);
-}
-
-/* Form Styles */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: var(--text-light);
-  font-size: 0.95rem;
-}
-
-.card input[type="text"],
-.card input[type="email"],
-.card textarea,
-.card select {
-  width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  padding: 12px 16px;
-  font-size: 15px;
-  font-family: 'Inter', sans-serif;
-  transition: var(--transition);
-  background: var(--bg-dark);
-  color: var(--text-light);
-}
-
-.card input:focus,
-.card textarea:focus,
-.card select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  outline: none;
-}
-
-.card textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.card textarea::placeholder,
-.card input::placeholder {
-  color: var(--text-gray);
-  opacity: 0.7;
-}
-
-/* File Input Styling */
-.file-input-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.file-input-wrapper input[type="file"] {
-  position: absolute;
-  left: -9999px;
-}
-
-.file-input-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--bg-dark);
-  border: 1px dashed var(--border);
-  border-radius: 0.75rem;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 14px;
-  color: var(--text-gray);
-}
-
-.file-input-label:hover {
-  border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.05);
-}
-
-.file-input-label svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--primary);
-}
-
-/* Color Input */
-.color-input {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.color-input input[type="color"] {
-  width: 50px;
-  height: 50px;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--bg-dark);
-}
-
-.color-input input[type="color"]:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-sm);
-}
-
-.color-input span {
-  color: var(--text-gray);
-  font-size: 14px;
-}
-
-/* Range Input */
-.range-input {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.range-input input[type="number"] {
-  width: 80px;
-}
-
-.range-input span {
-  color: var(--text-gray);
-  font-size: 14px;
-}
-
-/* Checkbox Styling */
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: var(--primary);
-}
-
-/* Button Styles */
-.button-group {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.card button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary {
-  background: var(--gradient-1);
-  color: white;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
-}
-
-.btn-secondary {
-  background: var(--gradient-2);
-  color: white;
-  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-}
-
-.btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(236, 72, 153, 0.5);
-}
-
-/* Loading State */
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-  position: relative;
-}
-
-.loading::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
-  margin: -10px 0 0 -10px;
-  border: 2px solid white;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Resume Preview */
-.resume-preview {
-  min-height: 400px;
-  padding: 40px;
-  background: white;
-  border-radius: 0.75rem;
-  font-family: 'Crimson Pro', serif;
-  font-size: 14px;
-  line-height: 1.7;
-  color: #222;
-  border: 1px solid #e5e7eb;
-}
-
-.resume-preview.customized {
-  font-family: var(--font-family, 'Crimson Pro'), serif;
-  font-size: calc(14px * var(--font-scale, 1));
-  color: var(--text-color, #222);
-  background: var(--bg-color, white);
-}
-
-.resume-preview h1 {
-  font-size: calc(2rem * var(--font-scale, 1));
-  margin-bottom: 16px;
-  color: var(--accent-color, #667eea);
-  font-weight: 700;
-}
-
-.resume-preview h3 {
-  font-size: calc(1.3rem * var(--font-scale, 1));
-  margin-top: 24px;
-  margin-bottom: 12px;
-  color: var(--accent-color, #667eea);
-  padding-bottom: 8px;
-  border-bottom: var(--divider-thickness, 2px) var(--divider-style, solid) var(--accent-color, #667eea);
-  font-weight: 600;
-}
-
-.resume-preview p {
-  margin-bottom: 8px;
-  color: var(--text-color, #222);
-}
-
-.resume-preview strong {
-  color: var(--accent-color, #667eea);
-  font-weight: 600;
-}
-
-#previewProfilePic {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#previewProfilePic img {
-  display: inline-block;
-  object-fit: cover;
-  border: 4px solid var(--accent-color, #667eea);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Profile Frame Styles */
-.frame-circle {
-  border-radius: 50% !important;
-}
-
-.frame-rounded {
-  border-radius: 16px !important;
-}
-
-.frame-square {
-  border-radius: 4px !important;
-}
-
-/* Section Headers */
-.section-header {
-  background: rgba(99, 102, 241, 0.05);
-  padding: 16px 20px;
-  border-radius: 0.75rem;
-  margin: 32px 0 20px 0;
-  border-left: 4px solid var(--primary);
-}
-
-.section-header h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--text-light);
-}
-
-/* Notification */
-.notification {
-  position: fixed;
-  top: 100px;
-  right: 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 16px 24px;
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  display: none;
-  align-items: center;
-  gap: 12px;
-  z-index: 1000;
-  animation: slideIn 0.3s ease;
-  color: var(--text-light);
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-top: 80px;
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 10%, rgba(99,102,241,.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 90% 80%, rgba(236,72,153,.05) 0%, transparent 70%);
   }
-}
 
-.notification.show {
-  display: flex;
-}
+  /* ── Layout ── */
+  .wrap { max-width: 1600px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
 
-.notification.success {
-  border-left: 4px solid var(--success);
-}
-
-.notification.error {
-  border-left: 4px solid #ef4444;
-}
-
-/* Footer */
-footer {
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  padding: 3rem 2rem;
-  margin-top: 5rem;
-}
-
-.footer-content {
-  max-width: 1600px;
-  margin: 0 auto;
-  text-align: center;
-  color: var(--text-gray);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .resume-welcome {
-    margin: 0 1rem 2rem;
-    padding: 2rem;
+  /* ── Hero ── */
+  .hero {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 1.75rem; padding: 2.75rem 3rem;
+    margin-bottom: 2rem; position: relative; overflow: hidden;
   }
-  
-  .dashboard-content {
-    padding: 0 1rem 2rem;
+  .hero::after {
+    content: ''; position: absolute; top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(99,102,241,.1) 0%, transparent 70%);
+    pointer-events: none;
   }
-}
+  .hero-label {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--primary); background: rgba(99,102,241,.1);
+    border: 1px solid rgba(99,102,241,.2); padding: .28rem .85rem;
+    border-radius: 999px; margin-bottom: 1.2rem;
+  }
+  .hero-label .dot {
+    width: 6px; height: 6px; background: var(--primary);
+    border-radius: 50%; animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
 
-/* Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.3rem);
+    font-weight: 700; letter-spacing: -.025em; line-height: 1.25;
+    margin-bottom: .6rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .hero h1 em {
+    font-style: normal; background: var(--g1);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-}
+  .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; }
 
-.card {
-  animation: fadeInUp 0.6s ease-out;
-}
+  /* ── Two-column grid ── */
+  .builder-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: border-color .35s;
+  }
+  .card:hover { border-color: var(--border-lit); }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    transform: scaleX(0); transform-origin: left; transition: transform .4s ease;
+  }
+  .card:hover::before { transform: scaleX(1); }
+  .card.c1::before { background: var(--g1); }
+  .card.c2::before { background: var(--g2); }
+
+  /* Card title */
+  .card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.1rem; font-weight: 600;
+    display: flex; align-items: center; gap: .6rem;
+    margin-bottom: 1.75rem; padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title-icon {
+    width: 32px; height: 32px; border-radius: .6rem;
+    background: rgba(99,102,241,.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card.c2 .card-title-icon { background: rgba(236,72,153,.15); }
+
+  /* Section divider inside form */
+  .form-section {
+    margin: 1.75rem 0 1rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .form-section-label {
+    font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--primary); white-space: nowrap;
+  }
+  .form-section-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* Form elements */
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label {
+    display: block; margin-bottom: .45rem;
+    font-size: .83rem; font-weight: 500; color: var(--text);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: .7rem 1rem;
+    font-size: .88rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    transition: var(--transition);
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+    background: var(--bg-lift);
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .8; }
+  textarea { resize: vertical; min-height: 90px; }
+  select { cursor: pointer; }
+  select option { background: var(--bg-card); }
+
+  /* File upload */
+  .file-input-wrapper { position: relative; width: 100%; }
+  .file-input-wrapper input[type="file"] { position: absolute; left: -9999px; }
+  .file-input-label {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .7rem 1rem;
+    background: var(--bg-input); border: 1px dashed var(--border);
+    border-radius: .75rem; cursor: pointer;
+    font-size: .85rem; color: var(--muted);
+    transition: var(--transition);
+  }
+  .file-input-label:hover { border-color: var(--primary); background: var(--bg-lift); color: var(--text); }
+  .file-input-label svg { width: 18px; height: 18px; stroke: var(--primary); flex-shrink: 0; }
+
+  /* Color & range rows */
+  .inline-row {
+    display: flex; align-items: center; gap: .85rem;
+  }
+  .inline-row input[type="color"] {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: .6rem; border: 1px solid var(--border);
+    cursor: pointer; background: var(--bg-input); padding: 3px;
+  }
+  .inline-row span { font-size: .82rem; color: var(--muted); }
+  .inline-row input[type="number"] { width: 80px; flex-shrink: 0; }
+
+  /* Checkbox */
+  .checkbox-label {
+    display: flex; align-items: center; gap: .7rem;
+    cursor: pointer; font-size: .88rem;
+  }
+  .checkbox-label input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--primary); cursor: pointer;
+  }
+
+  /* Button group */
+  .btn-group { display: flex; gap: .85rem; flex-wrap: wrap; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .75rem 1.5rem;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: .88rem;
+    border: none; border-radius: .85rem; cursor: pointer; text-decoration: none;
+    transition: transform .25s, box-shadow .25s, filter .25s;
+  }
+  .btn-primary { background: var(--g1); color: #fff; box-shadow: 0 4px 18px rgba(99,102,241,.35); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,.5); filter: brightness(1.08); }
+  .btn-secondary { background: var(--g2); color: #fff; box-shadow: 0 4px 18px rgba(236,72,153,.3); }
+  .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(236,72,153,.45); filter: brightness(1.08); }
+
+  /* ── Preview pane ── */
+  .preview-pane { position: sticky; top: 100px; }
+
+  .resume-preview {
+    background: white; border-radius: .75rem;
+    padding: 2.5rem; min-height: 500px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px; line-height: 1.7; color: #222;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  }
+  .resume-preview.customized {
+    font-family: var(--font-family, 'Crimson Pro'), serif;
+    font-size: calc(14px * var(--font-scale, 1));
+    color: var(--text-color, #222);
+    background: var(--bg-color, white);
+  }
+  .resume-preview h1 {
+    font-size: calc(2rem * var(--font-scale, 1));
+    margin-bottom: 14px;
+    color: var(--accent-color, #667eea);
+    font-weight: 700;
+  }
+  .resume-preview h3 {
+    font-size: calc(1.2rem * var(--font-scale, 1));
+    margin-top: 20px; margin-bottom: 10px;
+    color: var(--accent-color, #667eea);
+    padding-bottom: 6px;
+    border-bottom: var(--divider-thickness, 2px) var(--divider-style, solid) var(--accent-color, #667eea);
+    font-weight: 600;
+  }
+  .resume-preview p { margin-bottom: 6px; color: var(--text-color, #222); }
+  .resume-preview strong { color: var(--accent-color, #667eea); font-weight: 600; }
+
+  #previewProfilePic { text-align: center; margin-bottom: 18px; }
+  #previewProfilePic img {
+    display: inline-block; object-fit: cover;
+    border: 3px solid var(--accent-color, #667eea);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  .frame-circle  { border-radius: 50% !important; }
+  .frame-rounded { border-radius: 14px !important; }
+  .frame-square  { border-radius: 4px !important; }
+
+  /* Notification */
+  .notification {
+    position: fixed; top: 96px; right: 20px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: .9rem 1.4rem; border-radius: .85rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,.3);
+    display: none; align-items: center; gap: .75rem;
+    z-index: 1000; animation: slideIn .3s ease;
+    color: var(--text); font-size: .88rem;
+  }
+  @keyframes slideIn { from{transform:translateX(400px);opacity:0} to{transform:translateX(0);opacity:1} }
+  .notification.show { display: flex; }
+  .notification.success { border-left: 3px solid var(--success); }
+  .notification.error   { border-left: 3px solid #ef4444; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 2rem; margin-top: 1rem; }
+  .footer-inner { max-width: 1600px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-brand { font-family:'Sora',sans-serif; font-weight:700; font-size:.95rem; background:var(--g1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .footer-copy  { font-size:.8rem; color:var(--muted); }
+
+  /* Animations */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .hero          { animation: fadeUp .5s ease both; }
+  .builder-grid  { animation: fadeUp .5s .1s ease both; }
+
+  /* Loading */
+  .loading { opacity:.6; pointer-events:none; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .builder-grid { grid-template-columns: 1fr; }
+    .preview-pane { position: static; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .hero { padding: 2rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<div class="bg-pattern"></div>
 
-<!-- Include Navbar -->
 <?php include __DIR__ . '/../../includes/partials/navbar.php'; ?>
 
-<section class="resume-welcome">
-  <h1>Hi <span><?php echo htmlspecialchars($username); ?></span>, ready to build your resume?</h1>
-  <p>Fill out your details to create a professional, standout resume with AI-powered suggestions.</p>
-</section>
+<div class="wrap">
 
-<main class="dashboard-content">
-  <!-- Build Resume Form -->
-  <div class="card">
-    <h3>📝 Build Your Resume</h3>
-    <form method="post" enctype="multipart/form-data" id="resumeForm">
-      
-      <!-- Personal Information -->
-      <div class="form-group">
-        <label>Full Name *</label>
-        <input type="text" name="name" placeholder="John Doe" required value="<?php echo htmlspecialchars($name); ?>">
-      </div>
-      
-      <div class="form-group">
-        <label>Location</label>
-        <input type="text" name="location" placeholder="City, Country" value="<?php echo htmlspecialchars($location ?? ''); ?>">
-      </div>
-      
-      <div class="form-group">
-        <label>Email *</label>
-        <input type="email" name="email" placeholder="john.doe@example.com" required value="<?php echo htmlspecialchars($email); ?>">
-      </div>
-      
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="text" name="phone" placeholder="+1 (555) 123-4567" value="<?php echo htmlspecialchars($phone); ?>">
-      </div>
-      
-      <div class="form-group">
-        <label>LinkedIn URL</label>
-        <input type="text" name="linkedin" placeholder="https://linkedin.com/in/johndoe" value="<?php echo htmlspecialchars($linkedin ?? ''); ?>">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label"><span class="dot"></span> Resume Builder</div>
+    <h1>Let's build your resume, <em><?= htmlspecialchars($username) ?></em> &#x1F4C4;</h1>
+    <p>Fill in your details on the left and watch your resume come together live on the right.</p>
+  </div>
+
+  <!-- Builder -->
+  <div class="builder-grid">
+
+    <!-- ── Form ── -->
+    <div class="card c1">
+      <div class="card-title">
+        <div class="card-title-icon">
+          <svg width="16" height="16" fill="none" stroke="#818cf8" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        Build Your Resume
       </div>
 
-      <!-- Profile Picture -->
-      <div class="form-group">
-        <label>Upload Profile Picture</label>
-        <div class="file-input-wrapper">
-          <input type="file" name="profile_pic" id="profilePicInput" accept="image/*">
-          <label for="profilePicInput" class="file-input-label">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+      <form method="post" enctype="multipart/form-data" id="resumeForm">
+
+        <!-- Personal Info -->
+        <div class="form-section">
+          <span class="form-section-label">Personal Info</span>
+          <div class="form-section-line"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" name="name" placeholder="John Doe" required value="<?= htmlspecialchars($name) ?>">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" placeholder="City, Country" value="<?= htmlspecialchars($location ?? '') ?>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" placeholder="you@example.com" required value="<?= htmlspecialchars($email) ?>">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="text" name="phone" placeholder="+1 (555) 123-4567" value="<?= htmlspecialchars($phone) ?>">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>LinkedIn URL</label>
+          <input type="text" name="linkedin" placeholder="https://linkedin.com/in/johndoe" value="<?= htmlspecialchars($linkedin ?? '') ?>">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Profile Picture</label>
+            <div class="file-input-wrapper">
+              <input type="file" name="profile_pic" id="profilePicInput" accept="image/*">
+              <label for="profilePicInput" class="file-input-label">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                <span id="fileLabel">Choose image</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Frame Shape</label>
+            <select name="profile_frame" id="profileFrameSelect">
+              <option value="circle"  <?= ($profile_frame ?? 'circle') == 'circle'  ? 'selected' : '' ?>>Circle</option>
+              <option value="rounded" <?= ($profile_frame ?? '') == 'rounded' ? 'selected' : '' ?>>Rounded Square</option>
+              <option value="square"  <?= ($profile_frame ?? '') == 'square'  ? 'selected' : '' ?>>Square</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="form-section">
+          <span class="form-section-label">Content</span>
+          <div class="form-section-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Career Objective</label>
+          <textarea name="career_objective" rows="3" placeholder="A brief statement about your goals..."><?= htmlspecialchars($career_objective ?? '') ?></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Education</label>
+          <textarea name="education" rows="3" placeholder="BSc Computer Science&#10;University Name, 2020–2024"><?= htmlspecialchars($education) ?></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Skills <span style="color:var(--muted);font-weight:400">(comma separated)</span></label>
+          <textarea name="skills" rows="2" placeholder="JavaScript, Python, React, Node.js"><?= htmlspecialchars($skills) ?></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Strengths</label>
+            <textarea name="strengths" rows="3" placeholder="Problem-solving, Leadership..."><?= htmlspecialchars($strengths ?? '') ?></textarea>
+          </div>
+          <div class="form-group">
+            <label>Technical Familiarity</label>
+            <textarea name="technical" rows="3" placeholder="Languages, Frameworks, Tools..."><?= htmlspecialchars($technical ?? '') ?></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Interests</label>
+            <textarea name="interests" rows="3" placeholder="Open source, ML, Web Dev..."><?= htmlspecialchars($interests ?? '') ?></textarea>
+          </div>
+          <div class="form-group">
+            <label>Languages Known</label>
+            <textarea name="languages" rows="3" placeholder="English (Fluent), Spanish (B2)..."><?= htmlspecialchars($languages ?? '') ?></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Internship &amp; Experience</label>
+          <textarea name="experience" rows="4" placeholder="Software Intern – Company Name&#10;June 2023 – Aug 2023&#10;• Built X using Y"><?= htmlspecialchars($experience) ?></textarea>
+        </div>
+
+        <!-- Styling -->
+        <div class="form-section">
+          <span class="form-section-label">Styling</span>
+          <div class="form-section-line"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Accent Color</label>
+            <div class="inline-row">
+              <input type="color" name="accent_color" value="<?= htmlspecialchars($accent_color ?? '#667eea') ?>">
+              <span>Headings &amp; highlights</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Text Color</label>
+            <div class="inline-row">
+              <input type="color" name="text_color" value="<?= htmlspecialchars($text_color ?? '#222222') ?>">
+              <span>Body text</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Background Color</label>
+            <div class="inline-row">
+              <input type="color" name="bg_color" value="<?= htmlspecialchars($bg_color ?? '#ffffff') ?>">
+              <span>Page background</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Font Family</label>
+            <select name="font_family">
+              <option value="Crimson Pro"  <?= ($font_family ?? 'Crimson Pro') == 'Crimson Pro'  ? 'selected' : '' ?>>Crimson Pro (Serif)</option>
+              <option value="Inter"        <?= ($font_family ?? '') == 'Inter'        ? 'selected' : '' ?>>Inter (Sans-serif)</option>
+              <option value="Poppins"      <?= ($font_family ?? '') == 'Poppins'      ? 'selected' : '' ?>>Poppins (Sans-serif)</option>
+              <option value="Merriweather" <?= ($font_family ?? '') == 'Merriweather' ? 'selected' : '' ?>>Merriweather (Serif)</option>
+              <option value="Georgia"      <?= ($font_family ?? '') == 'Georgia'      ? 'selected' : '' ?>>Georgia (Serif)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Font Scale</label>
+            <div class="inline-row">
+              <input type="number" name="font_scale" step="0.05" min="0.8" max="1.5" value="<?= htmlspecialchars($font_scale ?? 1) ?>">
+              <span>0.8 – 1.5</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Divider Style</label>
+            <select name="divider_style">
+              <option value="solid"  <?= ($divider_style ?? 'solid') == 'solid'  ? 'selected' : '' ?>>Solid</option>
+              <option value="dashed" <?= ($divider_style ?? '') == 'dashed' ? 'selected' : '' ?>>Dashed</option>
+              <option value="dotted" <?= ($divider_style ?? '') == 'dotted' ? 'selected' : '' ?>>Dotted</option>
+              <option value="double" <?= ($divider_style ?? '') == 'double' ? 'selected' : '' ?>>Double</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Divider Thickness</label>
+            <div class="inline-row">
+              <input type="number" name="divider_thickness" min="1" max="10" value="<?= htmlspecialchars($divider_thickness ?? 2) ?>">
+              <span>1 – 10px</span>
+            </div>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:.2rem">
+            <label class="checkbox-label">
+              <input type="checkbox" name="bw_theme" value="1" <?= !empty($bw_theme) ? 'checked' : '' ?>>
+              <span>Black &amp; White Theme</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" id="refreshAiBtn">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
             </svg>
-            <span id="fileLabel">Choose file or drag here</span>
-          </label>
+            Refresh with AI
+          </button>
+          <button type="submit" name="download_pdf" class="btn btn-primary">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PDF
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ── Preview ── -->
+    <div class="preview-pane">
+      <div class="card c2">
+        <div class="card-title">
+          <div class="card-title-icon">
+            <svg width="16" height="16" fill="none" stroke="#f472b6" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          Live Preview
+        </div>
+
+        <div class="resume-preview customized" id="resumePreview" style="
+          --accent-color: <?= $accent_color ?? '#667eea' ?>;
+          --text-color:   <?= $text_color   ?? '#222' ?>;
+          --bg-color:     <?= $bg_color     ?? '#fff' ?>;
+          --font-family:  <?= $font_family  ?? 'Crimson Pro' ?>;
+          --font-scale:   <?= $font_scale   ?? 1 ?>;
+          --divider-style: <?= $divider_style ?? 'solid' ?>;
+          --divider-thickness: <?= $divider_thickness ?? 2 ?>px;
+        ">
+          <div id="previewProfilePic">
+            <?php if (!empty($profile_img)): ?>
+              <img src="<?= htmlspecialchars($profile_img) ?>" class="frame-<?= $profile_frame ?? 'circle' ?>" style="width:90px;height:90px;">
+            <?php endif; ?>
+          </div>
+
+          <h1 id="previewName"><?= htmlspecialchars($name ?: 'Your Name') ?></h1>
+          <?php if (!empty($location)):  ?><p><strong>Location:</strong> <span id="previewLocation"><?= htmlspecialchars($location) ?></span></p><?php endif; ?>
+          <p><strong>Email:</strong> <span id="previewEmail"><?= htmlspecialchars($email ?: 'your@email.com') ?></span></p>
+          <?php if (!empty($phone)):    ?><p><strong>Phone:</strong> <span id="previewPhone"><?= htmlspecialchars($phone) ?></span></p><?php endif; ?>
+          <?php if (!empty($linkedin)): ?><p><strong>LinkedIn:</strong> <span id="previewLinkedin"><?= htmlspecialchars($linkedin) ?></span></p><?php endif; ?>
+
+          <?php if (!empty($career_objective)): ?><h3>Career Objective</h3><p id="previewIntro"><?= nl2br(htmlspecialchars($career_objective)) ?></p><?php endif; ?>
+          <?php if (!empty($education)):        ?><h3>Education</h3><div id="previewEducation"><?= nl2br(htmlspecialchars($education)) ?></div><?php endif; ?>
+          <?php if (!empty($skills)):           ?><h3>Skills</h3><div id="previewSkills"><?= nl2br(htmlspecialchars($skills)) ?></div><?php endif; ?>
+          <?php if (!empty($strengths)):        ?><h3>Strengths</h3><div id="previewStrengths"><?= nl2br(htmlspecialchars($strengths)) ?></div><?php endif; ?>
+          <?php if (!empty($technical)):        ?><h3>Technical Familiarity</h3><div id="previewTechnical"><?= nl2br(htmlspecialchars($technical)) ?></div><?php endif; ?>
+          <?php if (!empty($interests)):        ?><h3>Interests</h3><div id="previewInterests"><?= nl2br(htmlspecialchars($interests)) ?></div><?php endif; ?>
+          <?php if (!empty($languages)):        ?><h3>Languages Known</h3><div id="previewLanguages"><?= nl2br(htmlspecialchars($languages)) ?></div><?php endif; ?>
+          <?php if (!empty($experience)):       ?><h3>Internship &amp; Experience</h3><div id="previewExperience"><?= nl2br(htmlspecialchars($experience)) ?></div><?php endif; ?>
         </div>
       </div>
-      
-      <div class="form-group">
-        <label>Profile Frame Shape</label>
-        <select name="profile_frame" id="profileFrameSelect">
-          <option value="circle" <?php if(($profile_frame ?? 'circle')=='circle') echo 'selected'; ?>>Circle</option>
-          <option value="rounded" <?php if(($profile_frame ?? '')=='rounded') echo 'selected'; ?>>Rounded Square</option>
-          <option value="square" <?php if(($profile_frame ?? '')=='square') echo 'selected'; ?>>Square</option>
-        </select>
-      </div>
-
-      <!-- Resume Content -->
-      <div class="section-header">
-        <h3>Resume Content</h3>
-      </div>
-
-      <div class="form-group">
-        <label>Career Objective</label>
-        <textarea name="career_objective" rows="3" placeholder="A brief statement about your career goals and what you bring to the role..."><?php echo htmlspecialchars($career_objective ?? ''); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Education</label>
-        <textarea name="education" rows="3" placeholder="Bachelor of Science in Computer Science&#10;University Name, 2020-2024"><?php echo htmlspecialchars($education); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Skills (comma separated)</label>
-        <textarea name="skills" rows="3" placeholder="JavaScript, Python, React, Node.js, SQL"><?php echo htmlspecialchars($skills); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Strengths</label>
-        <textarea name="strengths" rows="3" placeholder="Problem-solving, Team collaboration, Leadership..."><?php echo htmlspecialchars($strengths ?? ''); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Technical Familiarity</label>
-        <textarea name="technical" rows="3" placeholder="Programming Languages, Frameworks, Tools..."><?php echo htmlspecialchars($technical ?? ''); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Interests</label>
-        <textarea name="interests" rows="3" placeholder="Open source contribution, Machine Learning, Web Development..."><?php echo htmlspecialchars($interests ?? ''); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Languages Known</label>
-        <textarea name="languages" rows="3" placeholder="English (Fluent), Spanish (Intermediate)..."><?php echo htmlspecialchars($languages ?? ''); ?></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Internship & Experience</label>
-        <textarea name="experience" rows="3" placeholder="Software Engineering Intern&#10;Company Name, June 2023 - August 2023&#10;• Developed features using React and Node.js"><?php echo htmlspecialchars($experience); ?></textarea>
-      </div>
-
-      <!-- Styling Options -->
-      <div class="section-header">
-        <h3>Resume Styling</h3>
-      </div>
-
-      <div class="form-group color-input">
-        <label>Accent Color</label>
-        <input type="color" name="accent_color" value="<?php echo htmlspecialchars($accent_color ?? '#667eea'); ?>">
-        <span>Headings & highlights</span>
-      </div>
-      
-      <div class="form-group color-input">
-        <label>Text Color</label>
-        <input type="color" name="text_color" value="<?php echo htmlspecialchars($text_color ?? '#222222'); ?>">
-        <span>Body text</span>
-      </div>
-      
-      <div class="form-group color-input">
-        <label>Background Color</label>
-        <input type="color" name="bg_color" value="<?php echo htmlspecialchars($bg_color ?? '#ffffff'); ?>">
-        <span>Page background</span>
-      </div>
-
-      <div class="form-group">
-        <label>Font Family</label>
-        <select name="font_family">
-          <option value="Crimson Pro" <?php if(($font_family ?? 'Crimson Pro')=="Crimson Pro") echo "selected"; ?>>Crimson Pro (Serif)</option>
-          <option value="Inter" <?php if(($font_family ?? '')=="Inter") echo "selected"; ?>>Inter (Sans-serif)</option>
-          <option value="Poppins" <?php if(($font_family ?? '')=="Poppins") echo "selected"; ?>>Poppins (Sans-serif)</option>
-          <option value="Merriweather" <?php if(($font_family ?? '')=="Merriweather") echo "selected"; ?>>Merriweather (Serif)</option>
-          <option value="Georgia" <?php if(($font_family ?? '')=="Georgia") echo "selected"; ?>>Georgia (Serif)</option>
-        </select>
-      </div>
-
-      <div class="form-group range-input">
-        <label>Font Size Scale</label>
-        <input type="number" name="font_scale" step="0.05" min="0.8" max="1.5" value="<?php echo htmlspecialchars($font_scale ?? 1); ?>">
-        <span>0.8 - 1.5</span>
-      </div>
-
-      <div class="form-group">
-        <label>Divider Style</label>
-        <select name="divider_style">
-          <option value="solid" <?php if(($divider_style ?? 'solid')=='solid') echo 'selected'; ?>>Solid</option>
-          <option value="dashed" <?php if(($divider_style ?? '')=='dashed') echo 'selected'; ?>>Dashed</option>
-          <option value="dotted" <?php if(($divider_style ?? '')=='dotted') echo 'selected'; ?>>Dotted</option>
-          <option value="double" <?php if(($divider_style ?? '')=='double') echo 'selected'; ?>>Double</option>
-        </select>
-      </div>
-
-      <div class="form-group range-input">
-        <label>Divider Thickness (px)</label>
-        <input type="number" name="divider_thickness" min="1" max="10" value="<?php echo htmlspecialchars($divider_thickness ?? 2); ?>">
-        <span>1 - 10px</span>
-      </div>
-
-      <div class="form-group">
-        <label class="checkbox-label">
-          <input type="checkbox" name="bw_theme" value="1" <?php if(!empty($bw_theme)) echo "checked"; ?>>
-          <span>Black & White Theme</span>
-        </label>
-      </div>
-
-      <div class="button-group">
-        <button type="button" name="refresh_ai" class="btn-secondary" id="refreshAiBtn">
-          ✨ Refresh with AI
-        </button>
-        <button type="submit" name="download_pdf" class="btn-primary">
-          📄 Download PDF
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Live Preview -->
-  <div class="card">
-    <h3>👁️ Live Preview</h3>
-    <div class="resume-preview customized" id="resumePreview" style="
-      --accent-color: <?php echo $accent_color ?? '#667eea'; ?>;
-      --text-color: <?php echo $text_color ?? '#222'; ?>;
-      --bg-color: <?php echo $bg_color ?? '#fff'; ?>;
-      --font-family: <?php echo $font_family ?? 'Crimson Pro'; ?>;
-      --font-scale: <?php echo $font_scale ?? 1; ?>;
-      --divider-style: <?php echo $divider_style ?? 'solid'; ?>;
-      --divider-thickness: <?php echo $divider_thickness ?? 2; ?>px;
-    ">
-      <div id="previewProfilePic">
-        <?php if(!empty($profile_img)): ?>
-          <img src="<?php echo htmlspecialchars($profile_img); ?>" class="frame-<?php echo $profile_frame ?? 'circle'; ?>" style="width:96px;height:96px;">
-        <?php endif; ?>
-      </div>
-
-      <h1 id="previewName"><?php echo htmlspecialchars($name ?: 'Your Name'); ?></h1>
-      <?php if(!empty($location)): ?>
-      <p><strong>Location:</strong> <span id="previewLocation"><?php echo htmlspecialchars($location); ?></span></p>
-      <?php endif; ?>
-      <p><strong>Email:</strong> <span id="previewEmail"><?php echo htmlspecialchars($email ?: 'your@email.com'); ?></span></p>
-      <?php if(!empty($phone)): ?>
-      <p><strong>Phone:</strong> <span id="previewPhone"><?php echo htmlspecialchars($phone); ?></span></p>
-      <?php endif; ?>
-      <?php if(!empty($linkedin)): ?>
-      <p><strong>LinkedIn:</strong> <span id="previewLinkedin"><?php echo htmlspecialchars($linkedin); ?></span></p>
-      <?php endif; ?>
-
-      <?php if(!empty($career_objective)): ?>
-      <h3>Career Objective</h3>
-      <p id="previewIntro"><?php echo nl2br(htmlspecialchars($career_objective)); ?></p>
-      <?php endif; ?>
-
-      <?php if(!empty($education)): ?>
-      <h3>Education</h3>
-      <div id="previewEducation"><?php echo nl2br(htmlspecialchars($education)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($skills)): ?>
-      <h3>Skills</h3>
-      <div id="previewSkills"><?php echo nl2br(htmlspecialchars($skills)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($strengths)): ?>
-      <h3>Strengths</h3>
-      <div id="previewStrengths"><?php echo nl2br(htmlspecialchars($strengths)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($technical)): ?>
-      <h3>Technical Familiarity</h3>
-      <div id="previewTechnical"><?php echo nl2br(htmlspecialchars($technical)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($interests)): ?>
-      <h3>Interests</h3>
-      <div id="previewInterests"><?php echo nl2br(htmlspecialchars($interests)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($languages)): ?>
-      <h3>Languages Known</h3>
-      <div id="previewLanguages"><?php echo nl2br(htmlspecialchars($languages)); ?></div>
-      <?php endif; ?>
-
-      <?php if(!empty($experience)): ?>
-      <h3>Internship & Experience</h3>
-      <div id="previewExperience"><?php echo nl2br(htmlspecialchars($experience)); ?></div>
-      <?php endif; ?>
     </div>
-  </div>
-</main>
 
-<!-- Notification -->
+  </div>
+</div>
+
+<!-- Notification toast -->
 <div class="notification" id="notification">
   <span id="notificationText"></span>
 </div>
 
-<!-- Footer -->
 <footer>
-  <div class="footer-content">
+  <div class="footer-inner">
+    <div class="footer-brand">Skillsync AI</div>
     <div class="footer-copy">&copy; 2025 Skillsync AI. All Rights Reserved.</div>
   </div>
 </footer>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* ── Live field → preview mappings ── */
   const mappings = {
-    name: "previewName",
-    location: "previewLocation",
-    email: "previewEmail",
-    phone: "previewPhone",
-    linkedin: "previewLinkedin",
+    name:             "previewName",
+    location:         "previewLocation",
+    email:            "previewEmail",
+    phone:            "previewPhone",
+    linkedin:         "previewLinkedin",
     career_objective: "previewIntro",
-    skills: "previewSkills",
-    education: "previewEducation",
-    strengths: "previewStrengths",
-    technical: "previewTechnical",
-    interests: "previewInterests",
-    languages: "previewLanguages",
-    experience: "previewExperience"
+    skills:           "previewSkills",
+    education:        "previewEducation",
+    strengths:        "previewStrengths",
+    technical:        "previewTechnical",
+    interests:        "previewInterests",
+    languages:        "previewLanguages",
+    experience:       "previewExperience"
   };
 
   const resumePreview = document.getElementById("resumePreview");
 
   Object.keys(mappings).forEach(field => {
-    const input = document.querySelector(`[name="${field}"]`);
+    const input   = document.querySelector(`[name="${field}"]`);
     const preview = document.getElementById(mappings[field]);
-    
-    if(input && preview) {
-      const updatePreview = () => {
-        if(field === "skills") {
-          const skillsArr = input.value.split(",").map(s => s.trim()).filter(Boolean);
-          preview.innerHTML = skillsArr.length 
-            ? `<ul style="margin-left: 20px;">${skillsArr.map(s => `<li>${s}</li>`).join('')}</ul>` 
-            : "";
-        } else {
-          preview.innerHTML = input.value.replace(/\n/g, '<br>');
-        }
-      };
-      
-      input.addEventListener("input", updatePreview);
-      updatePreview();
-    }
+    if (!input || !preview) return;
+
+    const update = () => {
+      if (field === "skills") {
+        const arr = input.value.split(",").map(s => s.trim()).filter(Boolean);
+        preview.innerHTML = arr.length
+          ? `<ul style="margin-left:18px">${arr.map(s => `<li>${s}</li>`).join("")}</ul>`
+          : "";
+      } else {
+        preview.innerHTML = input.value.replace(/\n/g, "<br>");
+      }
+    };
+    input.addEventListener("input", update);
+    update();
   });
 
-  const profilePicInput = document.getElementById("profilePicInput");
-  const fileLabel = document.getElementById("fileLabel");
-  const previewProfilePic = document.getElementById("previewProfilePic");
-  
-  if(profilePicInput) {
-    profilePicInput.addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if(file) {
-        fileLabel.textContent = file.name;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const currentFrame = document.querySelector('[name="profile_frame"]').value;
-          previewProfilePic.innerHTML = `<img src="${e.target.result}" class="frame-${currentFrame}" style="width:96px;height:96px;">`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  /* ── Profile picture ── */
+  const profilePicInput    = document.getElementById("profilePicInput");
+  const fileLabel          = document.getElementById("fileLabel");
+  const previewProfilePic  = document.getElementById("previewProfilePic");
 
-  const profileFrameSelect = document.getElementById("profileFrameSelect");
-  if(profileFrameSelect) {
-    profileFrameSelect.addEventListener("change", function(e) {
-      const img = previewProfilePic.querySelector('img');
-      if(img) {
-        img.className = `frame-${e.target.value}`;
-      }
-    });
-  }
-
-  const colorInputs = ['accent_color','text_color','bg_color'];
-  colorInputs.forEach(name => {
-    const inp = document.querySelector(`[name="${name}"]`);
-    if(inp) {
-      inp.addEventListener('input', e => {
-        resumePreview.style.setProperty(`--${name.replace('_','-')}`, e.target.value);
-      });
-    }
+  profilePicInput?.addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    fileLabel.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = e2 => {
+      const frame = document.querySelector('[name="profile_frame"]').value;
+      previewProfilePic.innerHTML = `<img src="${e2.target.result}" class="frame-${frame}" style="width:90px;height:90px;">`;
+    };
+    reader.readAsDataURL(file);
   });
 
-  const fontSelect = document.querySelector(`[name="font_family"]`);
-  if(fontSelect) {
-    fontSelect.addEventListener('change', e => {
-      resumePreview.style.setProperty('--font-family', e.target.value);
+  document.getElementById("profileFrameSelect")?.addEventListener("change", e => {
+    const img = previewProfilePic.querySelector("img");
+    if (img) img.className = `frame-${e.target.value}`;
+  });
+
+  /* ── Style controls → CSS vars ── */
+  const cssVarMap = {
+    accent_color:      "--accent-color",
+    text_color:        "--text-color",
+    bg_color:          "--bg-color",
+    font_family:       "--font-family",
+    font_scale:        "--font-scale",
+    divider_style:     "--divider-style",
+    divider_thickness: "--divider-thickness"
+  };
+
+  Object.keys(cssVarMap).forEach(name => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    const evt = el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(evt, e => {
+      const val = name === "divider_thickness" ? e.target.value + "px" : e.target.value;
+      resumePreview.style.setProperty(cssVarMap[name], val);
     });
+  });
+
+  /* ── Toast ── */
+  function toast(msg, type = "success") {
+    const el   = document.getElementById("notification");
+    const text = document.getElementById("notificationText");
+    text.textContent = msg;
+    el.className = `notification ${type} show`;
+    setTimeout(() => el.classList.remove("show"), 4000);
   }
 
-  const fontScale = document.querySelector(`[name="font_scale"]`);
-  if(fontScale) {
-    fontScale.addEventListener('input', e => {
-      resumePreview.style.setProperty('--font-scale', e.target.value);
-    });
-  }
-
-  const dividerStyle = document.querySelector(`[name="divider_style"]`);
-  if(dividerStyle) {
-    dividerStyle.addEventListener('change', e => {
-      resumePreview.style.setProperty('--divider-style', e.target.value);
-    });
-  }
-
-  const dividerThickness = document.querySelector(`[name="divider_thickness"]`);
-  if(dividerThickness) {
-    dividerThickness.addEventListener('input', e => {
-      resumePreview.style.setProperty('--divider-thickness', e.target.value + 'px');
-    });
-  }
-
-  function showNotification(message, type = 'success') {
-    const notification = document.getElementById('notification');
-    const notificationText = document.getElementById('notificationText');
-    
-    notificationText.textContent = message;
-    notification.className = `notification ${type} show`;
-    
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 4000);
-  }
-
+  /* ── AI refresh ── */
   const refreshBtn = document.getElementById("refreshAiBtn");
-  const form = document.getElementById("resumeForm");
+  const form       = document.getElementById("resumeForm");
 
-  if(refreshBtn) {
-    refreshBtn.addEventListener("click", function() {
-      const formData = new FormData(form);
-      formData.append("refresh_ai", 1);
+  refreshBtn?.addEventListener("click", function () {
+    const fd = new FormData(form);
+    fd.append("refresh_ai", 1);
 
-      refreshBtn.classList.add('loading');
-      refreshBtn.textContent = 'Generating...';
+    refreshBtn.classList.add("loading");
+    refreshBtn.querySelector("svg").style.animation = "spin .6s linear infinite";
 
-      fetch("resume.php", {
-        method: "POST",
-        body: formData
-      })
-      .then(res => {
-        if(!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-      })
+    fetch("resume.php", { method: "POST", body: fd })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(data => {
-        if(data.career_objective) {
-          const input = document.querySelector("[name='career_objective']");
-          const preview = document.getElementById("previewIntro");
-          input.value = data.career_objective;
-          preview.innerHTML = data.career_objective.replace(/\n/g, "<br>");
-          showNotification('Career objective updated with AI!', 'success');
-        } else if(data.error) {
-          showNotification(data.error, 'error');
+        if (data.career_objective) {
+          const inp  = document.querySelector("[name='career_objective']");
+          const prev = document.getElementById("previewIntro");
+          inp.value  = data.career_objective;
+          prev.innerHTML = data.career_objective.replace(/\n/g, "<br>");
+          toast("Career objective updated with AI!", "success");
+        } else if (data.error) {
+          toast(data.error, "error");
         }
       })
-      .catch(err => {
-        console.error("AI Refresh failed:", err);
-        showNotification('Failed to refresh with AI. Please try again.', 'error');
-      })
+      .catch(() => toast("AI refresh failed. Please try again.", "error"))
       .finally(() => {
-        refreshBtn.classList.remove('loading');
-        refreshBtn.textContent = '✨ Refresh with AI';
+        refreshBtn.classList.remove("loading");
+        refreshBtn.querySelector("svg").style.animation = "";
       });
-    });
-  }
+  });
 
-  form.addEventListener('submit', function(e) {
-    const name = document.querySelector('[name="name"]').value.trim();
+  /* ── Form validation ── */
+  form.addEventListener("submit", function (e) {
+    const name  = document.querySelector('[name="name"]').value.trim();
     const email = document.querySelector('[name="email"]').value.trim();
-    
-    if(!name || !email) {
+    if (!name || !email) {
       e.preventDefault();
-      showNotification('Please fill in all required fields (Name and Email)', 'error');
+      toast("Name and Email are required.", "error");
     }
   });
 });
 </script>
+
 </body>
 </html>
