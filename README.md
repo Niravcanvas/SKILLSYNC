@@ -520,6 +520,5 @@ MIT License — see `LICENSE` for details.
 - Icons — all inline SVG, zero external requests
 
 ---
-
 <div align="center">
 </div>
